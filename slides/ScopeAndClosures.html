@@ -60,7 +60,7 @@
 			<li>Parsing - получает массив токенов и преобразует их в AST (Abstract Syntax Tree). 
 			<!-- Структура данных (дерево) - промежуточное представления программы (внутренние вершины - операторы, листья операнды). --> 
 			Можно потестировать на <a target="_blank" href="https://astexplorer.net/" title="">astexplorer.net</a></li>
-			<li>Code-Generation - Преобразование AST в исполняемый код, и заполнение </li>
+			<li>Code-Generation - Преобразование AST в исполняемый код, и заполняет Scope переменными и функциями</li>
 		</ol>
 		<p>Данные этапы гораздо сложнее, они также включают различные оптимизации производительности и исключение излишних элементов</p>
 	</section>
@@ -69,7 +69,7 @@
 		<h2>Compiler - 2 шага</h2>
 		<p>Предположим что у нас есть код <code class="js">var a = 2;</code></p>
 		<ol>
-			<li>Compiler сталкивается с <code class="js">var a</code> и пытается найти переменную <code class="js">a</code> в Scope. Если переменная не найдена, то она создается, иначе ничего не происходит.</li>
+			<li>Compiler сталкивается с <code class="js">var a</code> и пытается найти переменную <code class="js">a</code> в Scope. Если переменная не найдена, то она добавляется в Scope, иначе ничего не происходит.</li>
 			<li>Compiler генерирует код для Engine, в данном случае <code class="js">a = 2</code></li>
 		</ol>
 	</section>
@@ -160,9 +160,40 @@ Engine: "Hey, Scope outside of foo, oh you're the global Scope, ok cool. Ever he
 Scope: "Yep, sure have. Here ya go."
 -->
 	</section>
+
+
+	<section class="slide" id="errors">
+		<h2>Ошибки</h2>
+		<pre>
+			<code class="js">function foo(a) {
+    console.log( a + b );
+    b = a;
+}
+foo( 2 );</code>
+		</pre>
+
+		<!-- <p>Если переменной не существует:</p> -->
+		<ol>
+			<li>При получении значания - <span class="error">Uncaught ReferenceError: b is not defined</span></li>
+			<li>При присваивании - возвращаемся по стеку scope, если не находим переменную, то создаем ее в global scope</li>
+		</ol>
+		
+	</section>
+
+	<section class="slide" id="errors2">
+		<h2>Ошибки</h2>
+		<ol>
+			<li>В строгом режиме(strictmode - <code class="js">"use strict";</code>) невозможно обратиться к необьявленной переменной в обоих случаях: для записи и чтения значения, а то получите ошибку <code class="js">ReferenceError</code></li>
+			<li>Все попытки обращения к несуществующей переменной "бросают" исключение <code class="js">ReferenceError</code>. Но если обратиться к переменной не по назначению, получите ошибку <code class="js">TypeError</code>.</li>
+		</ol>
+		<pre>
+			<code class="js">var foo = 123;
+foo( 2 ); // TypeError
+			</code>
+		</pre>
+	</section>
+
 	
-
-
 
 
 

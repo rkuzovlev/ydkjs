@@ -61,3 +61,8 @@ p {
     margin-right: 40px;
     float: left;
 }
+
+
+#errors .error {
+	color: red;
+}
