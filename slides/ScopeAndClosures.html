@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Shower Presentation Engine</title>
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="shower/themes/ribbon/styles/screen-16x10.css">
+	<link rel="stylesheet" href="snc.css">
+
+	<link rel="stylesheet" href="/highlight/styles/default.css">
+	<script src="/highlight/highlight.pack.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body class="shower list">
+	<header class="caption">
+		<h1>Shower Presentation Engine</h1>
+		<p>Yours Truly, Famous Inc.</p>
+	</header>
+	
+	<section class="slide" id="cover">
+		<img src="pictures/snc/bookcover.jpg" alt="">
+		<div class="text">
+			<h2>You don't know JS</h2>
+			<h3>Scope & Closure</h3>
+			<ul>
+				<li><a href="#whatIsScope" title="">Что такое Scope?</a></li>
+				<li><a href="#" title="">Lexical Scope</a></li>
+				<li><a href="#" title="">Function vs. Block Scope</a></li>
+				<li><a href="#" title="">Hoisting</a></li>
+				<li><a href="#" title="">Scope Closures</a></li>
+			</ul>
+		</div>
+	</section>
+	
+	<section class="slide" id="jsCore">
+		<h2>Компоненты JS (условно)</h2>
+		<ol>
+			<li>Compiler - парсить исходники и генерация кода</li>
+			<li>Engine - исполнение скомпилированного байткода (машинный код V8)</li>
+			<li>Scope - хранение и "управление" переменными и функциями</li>
+		</ol>
+	</section>
+
+	<section class="slide" id="whatIsScope">
+		<h2>Что такое Scope?</h2>
+		<p>Хорошо структурированный набор правил для хранения переменных и функций, а также получение доступа к ним в дальнейшем</p>
+		<ol>
+			<li>Создать переменую и функцию(ссылку на фукцию)</li>
+			<li>Модификация и получение переменной/функции</li>
+			<li>Проверка "прав доступа" к переменным/функциям из исполняемого кода</li>
+		</ol>
+	</section>
+
+	<section class="slide" id="compiler">
+		<h2>Compiler</h2>
+		<ol>
+			<li>Tokenizing/Lexing - разделение кода программы на куски(chunks) называемые токены. <br />
+				Для примера <code class="js">var a = 2;</code> преобразуется в <code class="js">var</code>, <code class="js">a</code>, <code class="js">=</code>, <code class="js">2</code> и <code class="js">;</code></li>
+			<li>Parsing - получает массив токенов и преобразует их в AST (Abstract Syntax Tree). 
+			<!-- Структура данных (дерево) - промежуточное представления программы (внутренние вершины - операторы, листья операнды). --> 
+			Можно потестировать на <a target="_blank" href="https://astexplorer.net/" title="">astexplorer.net</a></li>
+			<li>Code-Generation - Преобразование AST в исполняемый код, и заполнение </li>
+		</ol>
+		<p>Данные этапы гораздо сложнее, они также включают различные оптимизации производительности и исключение излишних элементов</p>
+	</section>
+
+	<section class="slide" id="compilerSteps">
+		<h2>Compiler - 2 шага</h2>
+		<p>Предположим что у нас есть код <code class="js">var a = 2;</code></p>
+		<ol>
+			<li>Compiler сталкивается с <code class="js">var a</code> и пытается найти переменную <code class="js">a</code> в Scope. Если переменная не найдена, то она создается, иначе ничего не происходит.</li>
+			<li>Compiler генерирует код для Engine, в данном случае <code class="js">a = 2</code></li>
+		</ol>
+	</section>
+
+	<section class="slide" id="engineScopeConversation">
+		<h2>Engine/Scope обмен информацией</h2>
+<pre><code class="js">function foo(a) {
+    console.log( a ); // 2
+}
+foo( 2 );</code></pre>
+		
+		<ol>
+			<li>Получение значение переменной <code class="js">a</code> и функции <code class="js">foo</code></li>
+			<li>Получение переменной <code class="js">a</code> для записи нового значения</li>
+		</ol>
+	</section>
+
+
+	<section class="slide" id="engineScopeCompilerConversation">
+		<div class="scope">
+			<code class="js">var a, foo</code>
+		</div>
+
+<div class="comlier">
+<pre><code class="js">function foo(a) {
+    console.log( a ); // 2
+}
+foo( 2 );</code></pre>
+</div>
+
+		<div class="engine">
+			101000101010101000010101001010
+		</div>		
+
+<!--
+Look at https://github.com/getify/You-Dont-Know-JS/blob/master/scope%20&%20closures/ch1.md#enginescope-conversation
+
+Engine: Hey Scope, I have an RHS reference for foo. Ever heard of it?
+Scope: Why yes, I have. Compiler declared it just a second ago. He's a function. Here you go.
+Engine: Great, thanks! OK, I'm executing foo.
+Engine: Hey, Scope, I've got an LHS reference for a, ever heard of it?
+Scope: Why yes, I have. Compiler declared it as a formal parameter to foo just recently. Here you go.
+Engine: Helpful as always, Scope. Thanks again. Now, time to assign 2 to a.
+Engine: Hey, Scope, sorry to bother you again. I need an RHS look-up for console. Ever heard of it?
+Scope: No problem, Engine, this is what I do all day. Yes, I've got console. He's built-in. Here ya go.
+Engine: Perfect. Looking up log(..). OK, great, it's a function.
+Engine: Yo, Scope. Can you help me out with an RHS reference to a. I think I remember it, but just want to double-check.
+Scope: You're right, Engine. Same guy, hasn't changed. Here ya go.
+Engine: Cool. Passing the value of a, which is 2, into log(..).
+-->
+	</section>
+
+	<section class="slide" id="quiz">
+		<h2>Усвоим материал</h2>
+		<pre>
+			<code class="js">function foo(a) {
+    var b = a;
+    return a + b;
+}
+var c = foo( 2 );</code>
+		</pre>
+	</section>
+
+	<section class="slide" id="nestedScope">
+		<h2>Вложенный(Nested) Scope</h2>
+<div class="wrapper">
+		<pre>
+			<code class="js"><div class="nested" style="background-color: #8EFF8A;"><div class="nested" style="background-color: #8AE2FF;">function foo(a) {
+    console.log( a + b );
+}
+</div>
+var b = 2;
+foo( 2 ); // 4
+</div></code>
+</div>
+			<ol>
+				<li><code class="js" style="background-color: #8EFF8A;">global</code> scope - переменная <code class="js">b</code> и функция <code class="js">foo</code></li>
+				<li><code class="js" style="background-color: #8AE2FF;">foo</code> scope - переменная <code class="js">a</code></li>
+			</ol>
+		</pre>
+
+<!--
+Look at https://github.com/getify/You-Dont-Know-JS/blob/master/scope%20&%20closures/ch1.md#nested-scope
+
+Engine: "Hey, Scope of foo, ever heard of b? Got an RHS reference for it."
+Scope: "Nope, never heard of it. Go fish."
+Engine: "Hey, Scope outside of foo, oh you're the global Scope, ok cool. Ever heard of b? Got an RHS reference for it."
+Scope: "Yep, sure have. Here ya go."
+-->
+	</section>
+	
+
+
+
+
+
+	<section class="slide">
+		<p><em>quis nostrud</em> <strong>nisi ut aliquip</strong>  <i>dolor</i> <b>dolore</b> <code>&lt;culpa&gt;</code></p>		
+		<p class="note">Shower ['ʃəuə] noun. A person or thing that shows.</p>
+		<p class="double">Lorem ipsum dolor sit amet</p>
+		<figure>
+			<blockquote>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia.</p>
+			</blockquote>
+			<figcaption>Marcus Tullius Cicero</figcaption>
+		</figure>
+	</section>
+	
+	<section class="slide">
+		<h2>Code samples</h2>
+		<pre>
+			<code>&lt;!DOCTYPE html&gt;</code>
+			<code class="mark">&lt;html lang="en"&gt;</code>
+			<code><mark>&lt;head&gt;</mark> <span class="comment">&lt;!--Comment--&gt;</span></code>
+			<code>    &lt;title&gt;Shower&lt;/title&gt;</code>
+			<code>    &lt;meta charset="<mark class="important">UTF-8</mark>"&gt;</code>
+			<code>    &lt;link rel="stylesheet" href="screen.css"&gt;</code>
+			<code><mark>&lt;/head&gt;</mark></code>
+		</pre>
+	</section>
+
+	<section class="slide">
+		<h2>Even tables</h2>
+		<table>
+		<tr>
+			<th scope="col">Locavore</th>
+			<th>Umami</th>
+			<th>Helvetica</th>
+			<th>Vegan</th>
+		</tr>
+		<tr>
+			<th scope="row">Fingerstache</th>
+			<td>Kale</td>
+			<td>Chips</td>
+			<td>Keytar</td>
+		</tr>
+		<tr>
+			<th scope="row">Sriracha</th>
+			<td>Gluten-free</td>
+			<td>Ennui</td>
+			<td>Keffiyeh</td>
+		</tr>
+		<tr>
+			<th scope="row">Thundercats</th>
+			<td>Jean</td>
+			<td>Shorts</td>
+			<td>Biodiesel</td>
+		</tr>
+		<tr>
+			<th scope="row">Terry</th>
+			<td>Richardson</td>
+			<td>Swag</td>
+			<td>Blog</td>
+		</tr>
+		</table>
+		<p>It’s good to have information organized.</p>
+	</section>
+	<section class="slide" id="picture">
+		<h2>Pictures</h2>
+		<img src="pictures/picture.jpg" alt="" class="cover">
+		<style>
+			#picture h2 {
+				color:#FFF;
+				}
+		</style>
+	</section>
+	<section class="slide">
+		<h2 class="shout shrink">You can even shout this way</h2>
+	</section>
+	<section class="slide">
+		<h2>Inner navigation</h2>
+		<ol>
+			<li>Lets you reveal list items one by one</li>
+			<li class="next">To keep some key points</li>
+			<li class="next">In secret from audience</li>
+			<li class="next">But it will work only once</li>
+			<li class="next">Nobody wants to see the same joke twice</li>
+		</ol>
+	</section>
+	<section class="slide grid">
+		<h2>All nicely aligned to grid</h2>
+	</section>
+	<section class="slide" id="see-more">
+		<h2 class="shout">
+			<img src="pictures/logo.svg" alt="Shower logo">
+			<a href="https://github.com/shower/shower">See more on GitHub</a>
+		</h2>
+		<style>
+			#see-more h2 {
+				font-size:100px
+				}
+			#see-more img {
+				width:0.72em;
+				height:0.72em;
+				}
+		</style>
+	</section>
+	<p class="badge">
+		<a href="https://github.com/shower/shower">Fork me on GitHub</a>
+	</p>
+	<!--
+		To hide progress bar from entire presentation
+		just remove “progress” element.
+		-->
+	<div class="progress"></div>
+	<script src="shower/shower.min.js"></script>
+	<!-- Copyright © 2015 Yours Truly, Famous Inc. -->
+	<!-- Photos by John Carey, fiftyfootshadows.net -->
+</body>
+</html>

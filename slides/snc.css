@@ -1,0 +1,63 @@
+a {
+	text-decoration: none !important;
+    border: none !important;
+    color: #00BA57 !important;
+}
+
+p {
+	line-height: 40px;
+}
+
+.nested {
+    display: inline-block;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+
+// span.code {
+// 	background-color: #eee;
+// 	padding: 5px;
+// 	border-radius: 5px;
+// }
+
+// pre.code {
+// 	background-color: #eee;
+// 	padding: 5px;
+// 	border-radius: 5px;
+// }
+
+
+
+#cover div.text {
+    margin-left: 45%;
+}
+#cover div.text h2 {
+	text-align: center;
+	font-size:70px;
+	margin: 0;
+}
+#cover div.text h3 {
+	text-align: center;
+	font-size:50px;
+	margin: 0;
+}
+#cover div.text ul {
+	margin-left: 75px;
+}
+// #cover p {
+// 	margin:10px 0 0;
+// 	font-style:italic;
+// 	font-size:20px;
+// }
+#cover img {
+	float: left;
+	width: 40%;
+}
+
+
+
+#nestedScope .wrapper {
+    margin-right: 40px;
+    float: left;
+}
