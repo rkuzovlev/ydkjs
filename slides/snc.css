@@ -40,7 +40,12 @@ p {
 #cover div.text h3 {
 	text-align: center;
 	font-size:50px;
-	margin: 0;
+	line-height: 40px;
+    margin-bottom: 30px;
+    margin-top: 35px;
+}
+#cover div.text h3 i {
+    font-size: 24px;
 }
 #cover div.text ul {
 	margin-left: 75px;
@@ -66,3 +71,15 @@ p {
 #errors .error {
 	color: red;
 }
+
+
+
+#with .wrapper {
+    margin-right: -150px;
+    width: 70%;
+    float: left;
+}
+
+// #with ol {
+// 	margin-left: -200px;
+// }

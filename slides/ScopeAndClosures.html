@@ -22,11 +22,11 @@
 		<img src="pictures/snc/bookcover.jpg" alt="">
 		<div class="text">
 			<h2>You don't know JS</h2>
-			<h3>Scope & Closure</h3>
+			<h3>Scope & Closure <i>Пространство имен и Замыкание</i></h3>
 			<ul>
 				<li><a href="#whatIsScope" title="">Что такое Scope?</a></li>
-				<li><a href="#" title="">Lexical Scope</a></li>
-				<li><a href="#" title="">Function vs. Block Scope</a></li>
+				<li><a href="#lexicalScope" title="">Lexical Scope</a></li>
+				<li><a href="#functionBlockScope" title="">Function vs. Block Scope</a></li>
 				<li><a href="#" title="">Hoisting</a></li>
 				<li><a href="#" title="">Scope Closures</a></li>
 			</ul>
@@ -43,7 +43,7 @@
 	</section>
 
 	<section class="slide" id="whatIsScope">
-		<h2>Что такое Scope?</h2>
+		<h2>Что такое scope?</h2>
 		<p>Хорошо структурированный набор правил для хранения переменных и функций, а также получение доступа к ним в дальнейшем</p>
 		<ol>
 			<li>Создать переменую и функцию(ссылку на фукцию)</li>
@@ -60,7 +60,7 @@
 			<li>Parsing - получает массив токенов и преобразует их в AST (Abstract Syntax Tree). 
 			<!-- Структура данных (дерево) - промежуточное представления программы (внутренние вершины - операторы, листья операнды). --> 
 			Можно потестировать на <a target="_blank" href="https://astexplorer.net/" title="">astexplorer.net</a></li>
-			<li>Code-Generation - Преобразование AST в исполняемый код, и заполняет Scope переменными и функциями</li>
+			<li>Code-Generation - Преобразование AST в исполняемый код, и заполняет scope переменными и функциями</li>
 		</ol>
 		<p>Данные этапы гораздо сложнее, они также включают различные оптимизации производительности и исключение излишних элементов</p>
 	</section>
@@ -69,7 +69,7 @@
 		<h2>Compiler - 2 шага</h2>
 		<p>Предположим что у нас есть код <code class="js">var a = 2;</code></p>
 		<ol>
-			<li>Compiler сталкивается с <code class="js">var a</code> и пытается найти переменную <code class="js">a</code> в Scope. Если переменная не найдена, то она добавляется в Scope, иначе ничего не происходит.</li>
+			<li>Compiler сталкивается с <code class="js">var a</code> и пытается найти переменную <code class="js">a</code> в scope. Если переменная не найдена, то она добавляется в scope, иначе ничего не происходит.</li>
 			<li>Compiler генерирует код для Engine, в данном случае <code class="js">a = 2</code></li>
 		</ol>
 	</section>
@@ -134,7 +134,7 @@ var c = foo( 2 );</code>
 	</section>
 
 	<section class="slide" id="nestedScope">
-		<h2>Вложенный(Nested) Scope</h2>
+		<h2>Вложенный(Nested) scope</h2>
 <div class="wrapper">
 		<pre>
 			<code class="js"><div class="nested" style="background-color: #8EFF8A;"><div class="nested" style="background-color: #8AE2FF;">function foo(a) {
@@ -193,7 +193,168 @@ foo( 2 ); // TypeError
 		</pre>
 	</section>
 
+
+
+<!--
+	Lexical Scope
+-->
+
+
+	<section class="slide" id="lexicalScope">
+		<h2>Lexical scope</h2>
+		<p>Lexical scope - это scope который создается во время компиляции исходного текста(непосредственно неперд запуском программы).</p>
+		<img src="https://github.com/getify/You-Dont-Know-JS/raw/master/scope%20&%20closures/fig2.png" alt="scope and closure bubbles" style="width: 60%;float: left;margin-right: 60px;">
+		<ul>
+			<li>1 - <code class="js">foo</code></li>
+			<li>2 - <code class="js">a</code>, <code class="js">b</code> и <code class="js">bar</code></li>
+			<li>3 - <code class="js">c</code></li>
+		</ul>
+	</section>
+
+
+	<section class="slide" id="findVariables">
+		<h2>Поиск переменных</h2>
+		<ul>
+			<li>Поиск начинается из текущего пространства имен.</li>
+			<li>Если в текущем пространстве переменная не найдена, то осуществляется поиск в "родительском" пространстве.</li>
+			<li>Поиск продолжается до global scope.</li>
+			<li>Если переменная не найдена, то выбрасывается ошибка ReferenceError.</li>
+			<li>Поиск прекращается если найдена переменная, при этом все переменные с этим именем но в родительских scope будут недоступны(затенены, shadowed). </li>
+		</ul>
+	</section>
+
+
+	<section class="slide" id="globalScopeLink">
+		<h2>Ссылка на global scope</h2>
+		<pre>
+			<code class="js" style="font-size: 22px;">var b = 5;
+function foo(a) {
+	var b = "shadow";
+	function bar(){
+    	console.log( a + window.b );
+	}
+	bar()
+}
+foo( 2 ); // 7</code>
+		</pre>
+	</section>
+
+
+	<section class="slide" id="globalScopeLinkShadowed">
+		<h2>Ссылка на global scope (shadowed)</h2>
+		<pre>
+			<code class="js" style="font-size: 22px;">var b = 5;
+function foo(a) {
+	var b = "shadow", window = 12;
+	function bar(){
+    	console.log( a + window.b );
+	}
+	bar()
+}
+foo( 2 ); // NaN</code>
+		</pre>
+	</section>
+
+
+	<section class="slide" id="cheatingLexical">
+		<h2>Cheating(обман) lexical scope</h2>
+		<p>Как мы уже разобрались, lexical scope это scope который определяется самим программистом и создается еще "до начала работы программы".</p>
+		<p>Но есть 2 механизма как мы можем изменить scope во время работы программы: <b>eval</b>, <b>with</b></p>
+		<p>Оба механизма считаются плохой практикой.</p>
+	</section>
+
+
+	<section class="slide" id="eval">
+		<h2>Eval</h2>
+		<ul>
+			<li>Функция eval(code) позволяет выполнить код, переданный ей в виде строки.</li>
+			<li>Данный код будет выполнен в текущей области видимости.</li>
+			<li>В строгом режиме создает свое пространство имен.</li>
+		</ul>
+	</section>
+
+
+	<section class="slide" id="eval2">
+		<h2>Eval пример</h2>
+		<pre><code class="js">var b = 2;
+function foo(str) {
+    eval( str ); // cheating!
+    console.log( b ); // 3
+}
+foo( "var b = 3;" );</code>
+		</pre>
+	</section>
+
+	<section class="slide" id="with">
+		<h2>With</h2>
+
+		<div class="wrapper"><pre><code class="js" style="font-size: 22px;">var obj = {
+    a: 1,
+    b: 2
+};
+with (obj) {
+    a = 3 + b;
+    b = 4;
+}
+console.log(obj); // Object {a: 5, b: 4}</code></pre></div>
 	
+		<ol>
+			<li>Позволяет модифицировать объект в "упрощенном стиле"</li>
+			<li>Создает новое пространство имен</li>
+		</ol>
+
+	</section>
+
+	<section class="slide" id="with2">
+		<h2>With</h2>
+		<pre><code class="js" style="font-size: 14px;">var o1 = { a: 3 };
+var o2 = { b: 3 };
+
+function foo(obj) {
+    with (obj) {
+        a = 2;
+    }
+}
+
+foo( o1 );
+console.log( o1.a ); // 2
+
+foo( o2 );
+console.log( o2.a ); // undefined
+console.log( a ); // 2 -- Oops, leaked global!</code></pre>
+	</section>
+
+	<section class="slide" id="setTimeoutInterval">
+		<h2>setTimeout и setInterval</h2>
+		<p>Могут принимать строку первым параметром которая выполнится.</p>
+		<p>Аналогично eval модифицируют глобальное пространство имен, но с задержкой в выполнении.</p>
+		<pre><code class="js">function bar(){
+	setTimeout("var cc = 313;");
+	console.log(cc); // ReferenceError: cc is not defined
+}
+bar()</code></pre>
+	</section>
+
+	<section class="slide" id="newFunction">
+		<h2>new Function</h2>
+		<p>Последним параметром передается строка - тело функции</p>
+		<pre><code>new Function ([arg1[, arg2[, ... argN]],] functionBody)</code></pre>
+		<p>Пример</p>
+		<pre><code class="js">var multiply = new Function("x", "y", "return x * y")
+console.log(multiply(2, 4)); // 8
+</code></pre>
+	</section>
+
+	<section class="slide" id="functionBlockScope">
+		<h2>Function vs. Block Scope</h2>
+		<p></p>
+	</section>
+
+
+
+
+
+
 
 
 
