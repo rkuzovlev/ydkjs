@@ -80,6 +80,9 @@ p {
     float: left;
 }
 
-// #with ol {
-// 	margin-left: -200px;
-// }
+
+
+#functionScope .wrapper {
+    width: 50%;
+    float: left;
+}

@@ -27,7 +27,7 @@
 				<li><a href="#whatIsScope" title="">Что такое Scope?</a></li>
 				<li><a href="#lexicalScope" title="">Lexical Scope</a></li>
 				<li><a href="#functionBlockScope" title="">Function vs. Block Scope</a></li>
-				<li><a href="#" title="">Hoisting</a></li>
+				<li><a href="#hoisting" title="">Hoisting</a></li>
 				<li><a href="#" title="">Scope Closures</a></li>
 			</ul>
 		</div>
@@ -345,120 +345,373 @@ console.log(multiply(2, 4)); // 8
 </code></pre>
 	</section>
 
-	<section class="slide" id="functionBlockScope">
-		<h2>Function vs. Block Scope</h2>
-		<p></p>
-	</section>
-
-
-
-
-
-
-
-
-
-	<section class="slide">
-		<p><em>quis nostrud</em> <strong>nisi ut aliquip</strong>  <i>dolor</i> <b>dolore</b> <code>&lt;culpa&gt;</code></p>		
-		<p class="note">Shower ['ʃəuə] noun. A person or thing that shows.</p>
-		<p class="double">Lorem ipsum dolor sit amet</p>
-		<figure>
-			<blockquote>
-				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia.</p>
-			</blockquote>
-			<figcaption>Marcus Tullius Cicero</figcaption>
-		</figure>
-	</section>
-	
-	<section class="slide">
-		<h2>Code samples</h2>
+	<section class="slide" id="functionScope">
+		<h2>Scope From Functions</h2>
+		<div class="wrapper">
 		<pre>
-			<code>&lt;!DOCTYPE html&gt;</code>
-			<code class="mark">&lt;html lang="en"&gt;</code>
-			<code><mark>&lt;head&gt;</mark> <span class="comment">&lt;!--Comment--&gt;</span></code>
-			<code>    &lt;title&gt;Shower&lt;/title&gt;</code>
-			<code>    &lt;meta charset="<mark class="important">UTF-8</mark>"&gt;</code>
-			<code>    &lt;link rel="stylesheet" href="screen.css"&gt;</code>
-			<code><mark>&lt;/head&gt;</mark></code>
-		</pre>
-	</section>
+			<code class="js" style="font-size: 18px;"><div class="nested" style="background-color: #8EFF8A;">function foo(a) {
+    var b = 2;
+    // some code
+    <div class="nested" style="background-color: #8AE2FF;">function bar() {
+    // ...
+}</div>
+    // more code
+    var c = 3;
+}</div>
 
-	<section class="slide">
-		<h2>Even tables</h2>
-		<table>
-		<tr>
-			<th scope="col">Locavore</th>
-			<th>Umami</th>
-			<th>Helvetica</th>
-			<th>Vegan</th>
-		</tr>
-		<tr>
-			<th scope="row">Fingerstache</th>
-			<td>Kale</td>
-			<td>Chips</td>
-			<td>Keytar</td>
-		</tr>
-		<tr>
-			<th scope="row">Sriracha</th>
-			<td>Gluten-free</td>
-			<td>Ennui</td>
-			<td>Keffiyeh</td>
-		</tr>
-		<tr>
-			<th scope="row">Thundercats</th>
-			<td>Jean</td>
-			<td>Shorts</td>
-			<td>Biodiesel</td>
-		</tr>
-		<tr>
-			<th scope="row">Terry</th>
-			<td>Richardson</td>
-			<td>Swag</td>
-			<td>Blog</td>
-		</tr>
-		</table>
-		<p>It’s good to have information organized.</p>
-	</section>
-	<section class="slide" id="picture">
-		<h2>Pictures</h2>
-		<img src="pictures/picture.jpg" alt="" class="cover">
-		<style>
-			#picture h2 {
-				color:#FFF;
-				}
-		</style>
-	</section>
-	<section class="slide">
-		<h2 class="shout shrink">You can even shout this way</h2>
-	</section>
-	<section class="slide">
-		<h2>Inner navigation</h2>
+</code></pre></div>
+		
 		<ol>
-			<li>Lets you reveal list items one by one</li>
-			<li class="next">To keep some key points</li>
-			<li class="next">In secret from audience</li>
-			<li class="next">But it will work only once</li>
-			<li class="next">Nobody wants to see the same joke twice</li>
+			<li>Каждая функция создает свое пространство имен</li>
+			<li>Функция <b>foo</b> содержит переменные <code class="js">a</code>, <code class="js">b</code>, <code class="js">c</code> и функцию <code class="js">bar</code></li>
+			<li>Переменные <code class="js">a</code>, <code class="js">b</code>, <code class="js">c</code> и функция <code class="js">bar</code> доступны из функции <code class="js">bar</code> но ничего кроме <code class="js">foo</code> недоступно из глобального scope</li>
 		</ol>
 	</section>
-	<section class="slide grid">
-		<h2>All nicely aligned to grid</h2>
+
+	<section class="slide" id="hidingInScope">
+		<h2>Сокрытие в пространстве имен</h2>
+		<p>Две точки зрения:</p>
+		<ol>
+			<li>Мы можем создать функцию и написать в ней код.</li>
+			<li>Либо написать код, и обернуть его в функцию, тем самым скрыть переменные в другое пространство имен</li>
+		</ol>
+		<p>Последний подход позволяет убрать идентификаторы из глобальной области видимости, создавая модули, тем самым не "засоряя" глобальное пространство.</p>
 	</section>
-	<section class="slide" id="see-more">
-		<h2 class="shout">
-			<img src="pictures/logo.svg" alt="Shower logo">
-			<a href="https://github.com/shower/shower">See more on GitHub</a>
-		</h2>
-		<style>
-			#see-more h2 {
-				font-size:100px
-				}
-			#see-more img {
-				width:0.72em;
-				height:0.72em;
-				}
-		</style>
+
+	<section class="slide" id="hidingInScopeSample">
+		<h2>Пример без сокрытия в scope = антипатерн</h2>
+		<pre><code style="font-size: 22px">function doSomething(a) {
+    b = a + doSomethingElse( a * 2 );
+    return b * 3;
+}
+function doSomethingElse(a) {
+    return a - 1;
+}
+var b;
+console.log(doSomething( 2 )); // 15
+		</code></pre>
 	</section>
+
+	<section class="slide" id="hidingInScopeSample2">
+		<h2>Пример с сокрытием в scope</h2>
+		<pre><code style="font-size: 22px">function doSomething(a) {
+    function doSomethingElse(a) {
+        return a - 1;
+    }
+    var b = a + doSomethingElse( a * 2 );
+    return b * 3;
+}
+
+console.log(doSomething( 2 )); // 15
+		</code></pre>
+	</section>
+
+	<section class="slide" id="hidingInScopeSample3">
+		<h2>Создаем scope для нашего кода</h2>
+		<pre><code style="font-size: 22px">var a = 2;
+
+function foo() { 	// добавь это
+    var a = 3;
+    console.log( a ); // 3
+} 					// и это
+foo(); 				// и это
+
+console.log( a ); // 2</code></pre>
+	</section>
+
+	<section class="slide" id="hidingInScopeSampleEffective">
+		<h2>Как лучше скрыть переменные в scope?</h2>
+		<p>IIFE - Immediately Invoked Function Expression</p>
+		<pre><code style="font-size: 22px">var a = 2;
+(function IIFE(){ 	// -- добавь это
+    var a = 3;
+    console.log( a ); // 3
+})(); 				// -- и это
+console.log( a ); // 2</code></pre>
+	</section>
+
+	<section class="slide" id="IIFE">
+		<h2>Использование IIFE</h2>
+		<pre><code style="font-size: 18px">var User = (function UserModule( groups ){
+
+    var user = {}
+
+    user.login = function(user, pass){ /* some code */ }
+    user.addGroup = function(g){ /* some code */ }
+
+    return user;
+
+})( Groups );</code></pre>
+	</section>
+
+
+
+	<section class="slide" id="hidingInScopeSampleBenefits">
+		<h2>Плюсы сокрытия переменных <br>и ключевое слово var</h2>
+		<pre><code style="font-size: 16px">(function foo() {
+    function bar(a) {
+        i = 3; // изменяем `i`, причина бесконечного цикла
+        console.log( a + i );
+    }
+
+    for (var i=0; i < 10; i++) { // бесконечный цикл
+        bar( i * 2 );
+    }
+})();
+		</code></pre>
+	</section>
+
+	<section class="slide" id="hidingInScopeSampleBenefits2">
+		<h2>Решение проблемы</h2>
+		<pre style="margin-top: 84px;"><code style="font-size: 16px">(function foo() {
+    function bar(a) {
+        var i = 3; // добавили var
+        console.log( a + i );
+    }
+
+    for (var i=0; i < 10; i++) { // теперь все нормально
+        bar( i * 2 );
+    }
+})();
+		</code></pre>
+	</section>
+
+	<section class="slide" id="anonymousVSNamed">
+		<h2>Анонимные vs именованные функции</h2>
+		<pre><code style="font-size: 18px">setTimeout( function(){  // анонимная функция
+    console.log("Я подождал 1 секунду!");
+}, 1000 );</code></pre>
+
+<pre><code style="font-size: 18px">setTimeout( function timeoutHandler(){  // именованная функция
+    console.log("Я подождал 1 секунду!");
+}, 1000 );</code></pre>
+
+		<ol>
+			<li>Имя отображается в stack traces при отладке.</li>
+			<li>С именем функция может вызвать саму себя рекурсивно.</li>
+			<li>Именуя функции мы получаем более читабельный и понятный код.</li>
+		</ol>
+	</section>
+
+	<section class="slide" id="blocksAsScopes">
+		<h2>Создание scope в других блоках</h2>
+
+		<ol>
+			<li>ключевое слово <b>with</b> - как мы обсуждали ранее</li>
+			<li><b>try/catch</b> - точнее только блок <b>catch</b></li>
+			<li><b>let</b> - использовать в любом блоке кода</li>
+			<li><b>const</b> - создание костанты</li>
+		</ol>
+	</section>
+
+
+	<section class="slide" id="tryСatch">
+		<h2>try/catch</h2>
+		
+		<pre><code style="font-size: 18px">try {
+    throw new Error('some error');
+}
+catch (err) {
+    console.log( err ); // работает
+}
+
+console.log( err ); // ReferenceError: `err` not found</code></pre>
+	</section>
+
+	<section class="slide" id="let">
+		<h2>Ключевое слово let</h2>
+
+		<p>Создает переменную "ограниченную" в текущем блоке кода</p>
+		
+		<pre><code style="font-size: 18px">var foo = true;
+if (foo) {
+    let bar = foo * 2;
+    bar = something( bar );
+    console.log( bar );
+}
+console.log( bar ); // ReferenceError</code></pre>
+	</section>
+
+	<section class="slide" id="let2">
+		<h2>Ключевое слово let</h2>
+
+		<p>Можно даже так:</p>
+		
+		<pre><code style="font-size: 18px">{
+    let bar = 2;
+}
+console.log( bar ); // ReferenceError</code></pre>
+		
+		<p>Работает не во всех окружениях, может выбросить исключение (<i>Uncaught SyntaxError: Unexpected identifier</i>)</p>
+	</section>
+
+
+	<section class="slide" id="let3">
+		<h2>Ключевое слово let</h2>
+
+		<p>Переменная созданная при помощи let не "поднимается" наверх как это происходит с var</p>
+		
+		<p>Используем let:</p>
+		<pre><code style="font-size: 18px">console.log( bar ); // ReferenceError!
+let bar = 2;
+</code></pre>
+		<p>Используем var:</p>
+<pre><code style="font-size: 18px">console.log( bar ); // undefined
+var bar = 2;
+</code></pre>
+	</section>
+
+	<section class="slide" id="garbageCollection">
+		<h2>Сборка мусора</h2>
+		<p>Переменная someReallyBigData будет висеть в памяти пока не истекет таймер</p>
+
+<pre><code style="font-size: 18px">function nonOptimizedGC(){
+	var someReallyBigData = { .. }; // очень много данных
+	process( someReallyBigData );
+
+	setTimeout(function(){
+		console.log("После 10 секунд");
+		/* еще какие-то действия <b>НЕ</b> использующие someReallyBigData */
+	}, 10000)
+}
+</code></pre>
+	</section>
+
+	<section class="slide" id="garbageCollectionOptimized">
+		<h2>Сборка мусора (оптимизация)</h2>
+		<p>Переменная someReallyBigData очистится гораздо раньше</p>
+
+<pre><code style="font-size: 16px">function optimizedGC(){
+	{
+		let someReallyBigData = { .. }; // очень много данных
+		process( someReallyBigData );
+	} // someReallyBigData уже может быть очищена GC
+
+	setTimeout(function(){
+		console.log("После 10 секунд");
+		/* еще какие-то действия <b>НЕ</b> использующие someReallyBigData */
+	}, 10000)
+}
+</code></pre>
+	</section>
+
+	<section class="slide" id="const">
+		<h2>Использование const</h2>
+		<p>Аналогично let, const создается в текущем блоке</p>
+
+<pre><code style="font-size: 16px">var foo = true;
+if (foo) {
+    var a = 2;
+    const b = 3; // доступно только в данном if блоке
+
+    a = 3; // можно поменять
+    b = 4; // а тут ошибка!
+}
+
+console.log( a ); // 3
+console.log( b ); // ReferenceError!</code></pre>
+	</section>
+
+	<section class="slide" id="letInLoops">
+		<h2>Использование let в циклах</h2>
+		<p></p>
+
+<pre><code style="font-size: 16px"></code></pre>
+	</section>
+
+	<section class="slide" id="hoisting">
+		<h2>Hoisting (поднятие) переменных и функций</h2>
+		<p>Поднятие переменных основанно на двойном "прохождении" кода при работе программы</p>
+		<ul>
+			<li>Когда Compiler компилирует код, он создает байткод для исполнения, а также создает пространства имен. (образно говоря, передвигает все объявления переменных и функции в начало блока)</li>
+			<li>Затем Engine исполняет скомпилированный код используя созданные пространства для хранения переменных и функции.</li>
+		</ul>
+	</section>
+
+	<section class="slide" id="hoistingSamples">
+		<h2>Примеры hoisting</h2>
+		<p>Пример 1</p>
+
+<pre style="float: left; width: 50%;"><code style="font-size: 18px">a = 2;
+var a;
+console.log( a ); <span class="next">// 2</span></code></pre>
+
+<pre style="float: left;" class="next"><code style="font-size: 18px">var a;
+a = 2;
+console.log( a );</code></pre>
+
+
+
+<div style="clear: both;"></div>
+
+
+
+		<div class="next">
+			<p>Пример 2</p>
+<pre style="float: left; width: 50%;"><code style="font-size: 18px">console.log( a ); <span class="next">// undefined</span>
+var a = 2;</code></pre>
+
+<pre style="float: left;" class="next"><code style="font-size: 18px">var a;
+console.log( a );
+a = 2;</code></pre>
+		</div>
+
+
+	</section>
+
+	<section class="slide" id="functionHoisting">
+		<h2>Hoisting функций</h2>
+		<p>Аналогично переменным поднимаются и функции</p>
+
+<pre><code style="font-size: 20px">foo(2);
+function foo(a){
+	console.log(a);
+}</code></pre>
+
+		<p>Мы можем использовать функцию foo до ее объявления</p>
+	</section>
+
+	<section class="slide" id="functionHoisting2">
+		<h2>Hoisting функций</h2>
+		<p>Но анонимную функцию сохраненную в переменной так использовать не получится</p>
+
+<pre><code style="font-size: 20px">foo(2); // TypeError: foo is not a function
+bar(2); // ReferenceError: bar is not defined
+
+var foo = function bar(a){
+	console.log(a);
+}</code></pre>
+	</section>
+
+	<section class="slide" id="functionHoisting3">
+		<h2>Hoisting функций</h2>
+		<p>Но анонимную функцию сохраненную в переменной так использовать не получится</p>
+
+<pre><code style="font-size: 20px">var foo = function bar(a){
+	console.log(a);
+}
+
+foo(2); // в данном случае все ок
+bar(2); // ReferenceError: bar is not defined</code></pre>
+	</section>
+
+
+	<section class="slide" id="functionsFirst">
+		<h2>Сначало функции</h2>
+
+<pre><code style="font-size: 20px"></code></pre>
+
+	</section>
+
+
+	
+
+
+
+
+
+
+	
 	<p class="badge">
 		<a href="https://github.com/shower/shower">Fork me on GitHub</a>
 	</p>
