@@ -697,12 +697,60 @@ bar(2); // ReferenceError: bar is not defined</code></pre>
 
 
 	<section class="slide" id="functionsFirst">
-		<h2>Сначало функции</h2>
+		<h2>Что раньше, функции или переменные?</h2>
+		<p>При объявлении функции и переменной с одинаковым именем, функции получают приоритет!</p>
 
-<pre><code style="font-size: 20px"></code></pre>
+<pre><code style="font-size: 20px">foo(); // 1
+var foo;
+function foo() {
+    console.log( 1 );
+}
+foo = function() {
+    console.log( 2 );
+};</code></pre>
 
 	</section>
 
+	<section class="slide" id="functionsFirst2">
+		<h2>Что раньше, функции или переменные?</h2>
+
+<pre><code style="font-size: 16px">function foo() {
+    console.log( 1 );
+}
+var foo;
+
+foo(); // 1
+
+foo = function() {
+    console.log( 2 );
+};
+
+<span class="next">foo(); // 2</span>
+</code></pre>
+
+	</section>
+
+	<section class="slide" id="functionsFirst3">
+		<h2>Еще один пример</h2>
+
+<pre><code style="font-size: 16px">foo(); // 3
+
+function foo() { console.log( 1 ); }
+
+foo(); // 3
+
+var foo = function() { console.log( 2 ); };
+
+foo(); // 2
+
+function foo() { console.log( 3 ); }
+
+foo(); // 2
+</code></pre>
+
+	</section>
+
+	
 
 	
 
