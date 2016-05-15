@@ -673,7 +673,7 @@ function foo(a){
 
 	<section class="slide" id="functionHoisting2">
 		<h2>Hoisting функций</h2>
-		<p>Но анонимную функцию сохраненную в переменной так использовать не получится</p>
+		<p>Но функцию выражение сохраненную в переменной так использовать не получится</p>
 
 <pre><code style="font-size: 20px">foo(2); // TypeError: foo is not a function
 bar(2); // ReferenceError: bar is not defined
@@ -685,7 +685,7 @@ var foo = function bar(a){
 
 	<section class="slide" id="functionHoisting3">
 		<h2>Hoisting функций</h2>
-		<p>Но анонимную функцию сохраненную в переменной так использовать не получится</p>
+		<p>Немного поменяем местами</p>
 
 <pre><code style="font-size: 20px">var foo = function bar(a){
 	console.log(a);
