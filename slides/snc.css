@@ -86,3 +86,66 @@ p {
     width: 50%;
     float: left;
 }
+
+
+#engineScopeCompilerConversation .elem {
+	display: inline-block;
+	position: absolute;
+}
+
+#engineScopeCompilerConversation .elem .c{
+	padding: 20px;
+	border-radius: 10px;
+	border-width: 4px;
+	border-style: solid;
+    font-size: 18px;
+}
+
+#engineScopeCompilerConversation .elem > p{
+	font-weight: bold;
+	margin-bottom: 0;
+}
+
+#engineScopeCompilerConversation .scope {
+	top: 130px;
+}
+
+#engineScopeCompilerConversation .engine {
+	top: 130px;
+	right: 30px;
+}
+
+#engineScopeCompilerConversation .comlier {
+	top: 350px;
+	left: 330px;
+}
+
+#engineScopeCompilerConversation .scope .c {
+	border-color: #8EFF8A;
+}
+
+#engineScopeCompilerConversation .engine .c{
+	border-color: #8AE2FF;
+}
+
+#engineScopeCompilerConversation .comlier .c{
+	border-color: #FFFB8A;
+}
+
+#engineScopeCompilerConversation .arrow1,
+#engineScopeCompilerConversation .arrow2 {
+	position: absolute;
+	width: 90px;
+}
+
+#engineScopeCompilerConversation .arrow1 {
+    top: 310px;
+    left: 220px;
+    transform: rotate(220deg);
+}
+
+#engineScopeCompilerConversation .arrow2 {
+    top: 310px;
+    right: 260px;
+    transform: rotate(320deg);
+}

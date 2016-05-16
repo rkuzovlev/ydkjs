@@ -74,6 +74,38 @@
 		</ol>
 	</section>
 
+	
+	<section class="slide" id="engineScopeCompilerConversation">
+		<div class="elem scope">
+			<p>Scope</p>
+			<div class="c">
+				Variables: &nbsp;&nbsp; <strong>a</strong> <br/>
+				Functions: &nbsp; <strong>foo</strong>
+			</div>
+		</div>
+
+		<img class="arrow1" src="/pictures/arrow.png" alt="">
+
+		<div class="elem engine">
+			<p>Engine</p>
+			<div class="c">
+				101000101010101000010101<br />
+				100101000101010110100101
+			</div>
+		</div>
+
+		<img class="arrow2" src="/pictures/arrow.png" alt="">
+
+		<div class="elem comlier">
+			<p>Compiler</p>
+			<div class="c">
+<pre><code class="js">function foo(a) {
+    console.log( a ); // 2
+}
+foo( 2 );</code></pre></div></div>
+	</section>
+
+
 	<section class="slide" id="engineScopeConversation">
 		<h2>Engine/Scope обмен информацией</h2>
 <pre><code class="js">function foo(a) {
@@ -85,24 +117,6 @@ foo( 2 );</code></pre>
 			<li>Получение значение переменной <code class="js">a</code> и функции <code class="js">foo</code></li>
 			<li>Получение переменной <code class="js">a</code> для записи нового значения</li>
 		</ol>
-	</section>
-
-
-	<section class="slide" id="engineScopeCompilerConversation">
-		<div class="scope">
-			<code class="js">var a, foo</code>
-		</div>
-
-<div class="comlier">
-<pre><code class="js">function foo(a) {
-    console.log( a ); // 2
-}
-foo( 2 );</code></pre>
-</div>
-
-		<div class="engine">
-			101000101010101000010101001010
-		</div>		
 
 <!--
 Look at https://github.com/getify/You-Dont-Know-JS/blob/master/scope%20&%20closures/ch1.md#enginescope-conversation
@@ -1033,9 +1047,6 @@ foo.doAnother(); // 1 ! 2 ! 3
 
 
 	
-	<p class="badge">
-		<a href="https://github.com/shower/shower">Fork me on GitHub</a>
-	</p>
 	<!--
 		To hide progress bar from entire presentation
 		just remove “progress” element.
