@@ -750,9 +750,282 @@ foo(); // 2
 
 	</section>
 
-	
+	<section class="slide" id="closure">
+		<h2>Замыкание (closure)</h2>
 
+		<ul>
+			<li>Мы встречаемся с замыканием каждый раз при написаний JS кода.</li>
+			<li>Использование замыкания не тербует дополнительных ключевых слов или конструкций языка.</li>
+		</ul>
+
+	</section>
+
+
+	<section class="slide" id="closure2">
+		<h2>Замыкание (closure)</h2>
+
+		<p><strong>Замыкание</strong> - способность функции при выполнеии использовать переменные и/или функции из "родительских" пространств имен(scopes) даже если эта функция выполняется вне своего lexical scope</p>
+
+		<div style="float: left; width: 50%;">
+			<pre><code style="font-size: 14px">function foo() {
+    var a = 2;
+
+    function bar() {
+        console.log( a ); // 2
+    }
+
+    bar();
+}
+foo();</code></pre>
+</div>
+
+		<ul>
+			<li><code class="js">console.log( a );</code> - переменная <code class="js">a</code> берется из родительского scope.</li>
+			<li>Но функция <code class="js">bar</code> попрежнему выполняется в своем пространстве имен.</li>
+		</ul>
+
+	</section>
+
+
+	<section class="slide" id="closureSample">
+		<h2>Пример замыкания</h2>
+
+		<pre><code style="font-size: 16px">function foo() {
+    var a = 2;
+
+    function bar() {
+        console.log( a );
+    }
+
+    return bar;
+}
+
+var baz = foo();
+
+baz(); // 2 -- используя замыкания мы все еще имеем доступ к переменной 'a'</code></pre>
+
+	</section>
+
+	<section class="slide" id="closureSample2">
+		<h2>Пример замыкания, немного переделанный</h2>
+
+		<pre><code style="font-size: 14px">var fn;
+function foo() {
+    var a = 2;
+    function baz() {
+        console.log( a );
+    }
+    fn = baz; // присваиваем `baz` глобальной переменной
+}
+
+function bar() {
+    fn(); // вызываем функцию `fn` которая на самом деле `baz` которая использует замыкание
+}
+
+foo();
+bar(); // 2</code></pre>
+	</section>
 	
+	<section class="slide" id="closureSample3">
+		<h2>DOM Events + Closure</h2>
+
+		<p>При регистрации новой функции для события (DOM | Ajax | cross-window messaging | web workers) создается замыкание.</p>
+		
+
+		<pre><code style="font-size: 14px">function setupBot(name, selector) {
+    $( selector ).click( function activator(){
+        console.log( "Activating: " + name );
+    } );
+}
+
+setupBot( "Closure Bot 1", "#bot_1" );
+setupBot( "Closure Bot 2", "#bot_2" );</code></pre>
+	</section>
+
+	<section class="slide" id="closureAndLoops">
+		<h2>Использование циклов и замыканий</h2>
+
+		
+		<div style="float: left; width: 50%;">
+			<p>Пример:</p>
+			<pre><code style="font-size: 14px">for (var i = 0; i < 4; i++) {
+    console.log( i );
+}
+
+// 0
+// 1
+// 2
+// 3</code></pre>
+		</div>
+
+	<div class="next" style="float: left; width: 50%;">
+<pre><code style="font-size: 14px">var i = 0;
+
+<span class="next">console.log(i); // 0</span>
+<span class="next">i++;</span>
+<span class="next">console.log(i); // 1</span>
+<span class="next">i++;</span>
+<span class="next">console.log(i); // 2</span>
+<span class="next">i++;</span>
+<span class="next">console.log(i); // 3</span>
+<span class="next">i++;</span>
+</code></pre>
+	</div>
+
+	</section>
+
+
+
+
+	<section class="slide" id="closureAndLoops2">
+		<h2>Использование циклов и замыканий</h2>
+
+
+		<div style="float: left; width: 50%;">
+			<p>Пример c setTimeout:</p>
+			<pre><code style="font-size: 14px">for (var i = 0; i < 4; i++) {
+    setTimeout( function timer(){
+        console.log( i );
+    }, i * 1000 );
+}
+
+// 4
+// 4
+// 4
+// 4</code></pre>
+		</div>
+
+	<div class="next" style="float: left; width: 50%;">
+		<pre><code style="font-size: 14px">var i = 0;
+function timer(){
+	console.log(i);
+}
+<span class="next">
+i++;
+i++;
+i++;
+i++;
+</span><span class="next">
+timer(); // 4
+timer(); // 4
+timer(); // 4
+timer(); // 4
+</span>
+</code></pre>
+	</div>
+
+	</section>
+
+
+	<section class="slide" id="closureAndLoopsExampleSolution">
+		<h2>Решение проблемы</h2>
+
+
+		<div style="float: left; width: 50%;">
+			<p>Старый вариант:</p>
+			<pre><code style="font-size: 14px">for (var i = 0; i < 4; i++) {
+    setTimeout( function timer(){
+        console.log( i );
+    }, i * 1000 );
+}
+</code></pre>
+		</div>
+
+		<div style="float: left; width: 50%;">
+			<p>Новый вариант:</p>
+			<pre><code style="font-size: 14px">for (var i = 0; i < 4; i++) {
+    (function(){ // оборачиваем в IIFE
+    
+    	// создаем отдельную переменную
+    	// на каждую итерацию цикла
+    	var j = i; 
+        setTimeout( function timer(){
+            console.log( i );
+        }, i * 1000 );
+
+    })(); // конец IIFE
+}
+</code></pre>
+	</div>
+
+	</section>
+
+	<section class="slide" id="closureAndLoopsExampleSolutionWithLet">
+		<h2>Решение проблемы с помошью let</h2>
+
+
+		<div style="float: left; width: 50%;">
+			<pre><code style="font-size: 14px">for (let i = 0; i < 4; i++) { 		// let
+    setTimeout( function timer(){
+        console.log( i );
+    }, i * 1000 );
+}
+
+// 0
+// 1
+// 2
+// 3
+</code></pre>
+		</div>
+
+		<div class="next" style="float: left; width: 50%;">
+			<pre><code style="font-size: 14px">{
+	let i = 0;
+	(function timer(){ console.log( i ); })()
+}
+
+{
+	let i = 1;
+	(function timer(){ console.log( i ); })()
+}
+
+// ......... и так 4 раза
+</code></pre>
+	</div>
+	
+	<p style="margin-bottom: 0;"><strong>let</strong> работает не во всех окружениях, смотри <a target="_blank" href="http://caniuse.com/#feat=let">http://caniuse.com/#feat=let</a></p>
+	<p>Для nodejs можно проверить на сайте <a target="_blank" href="http://node.green/">http://node.green/</a></p>
+
+	</section>
+
+	<section class="slide" id="closureAndModules">
+		<h2>Использование замыканий в модулях</h2>
+
+		<div style="display: inline-block; width: 59%;">
+		<pre><code style="font-size: 12px">function CoolModule() {
+    var something = "cool";    // hidden variables
+    var another = [1, 2, 3];   // in scope
+
+    function doSomething() {
+        console.log( something );
+    }
+
+    function doAnother() {
+        console.log( another.join( " ! " ) );
+    }
+
+    return {
+        doSomething: doSomething,
+        doAnother: doAnother
+    };
+}
+</code></pre>
+	</div>
+	<div style="display: inline-block; width: 39%;vertical-align: top;">
+		<pre><code style="font-size: 12px">var foo = CoolModule();
+
+foo.doSomething(); // cool
+foo.doAnother(); // 1 ! 2 ! 3
+</code></pre>
+	</div>
+	</section>
+
+	<section class="slide" id="thansForWatching">
+		<h2 style="text-align: center; margin-top: 150px;">Спасибо за внимание ;)</h2>
+	</section>
+
+
+
 
 
 
