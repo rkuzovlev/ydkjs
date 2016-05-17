@@ -74,7 +74,7 @@
 		</ol>
 	</section>
 
-	
+
 	<section class="slide" id="engineScopeCompilerConversation">
 		<div class="elem scope">
 			<p>Scope</p>
@@ -233,7 +233,7 @@ foo( 2 ); // TypeError
 			<li>Если в текущем пространстве переменная не найдена, то осуществляется поиск в "родительском" пространстве.</li>
 			<li>Поиск продолжается до global scope.</li>
 			<li>Если переменная не найдена, то выбрасывается ошибка ReferenceError.</li>
-			<li>Поиск прекращается если найдена переменная, при этом все переменные с этим именем но в родительских scope будут недоступны(затенены, shadowed). </li>
+			<li>Поиск прекращается если найдена переменная, при этом все переменные с этим именем но в родительских scope будут недоступны (затененны, shadowed). </li>
 		</ul>
 	</section>
 
@@ -281,8 +281,8 @@ foo( 2 ); // NaN</code>
 	<section class="slide" id="eval">
 		<h2>Eval</h2>
 		<ul>
-			<li>Функция eval(code) позволяет выполнить код, переданный ей в виде строки.</li>
-			<li>Данный код будет выполнен в текущей области видимости.</li>
+			<li>Функция <code class="js">eval(code)</code> позволяет выполнить код, переданный ей в виде строки.</li>
+			<li>Данный код будет выполнен в текущем пространстве имен.</li>
 			<li>В строгом режиме создает свое пространство имен.</li>
 		</ul>
 	</section>
@@ -330,12 +330,12 @@ function foo(obj) {
     }
 }
 
-foo( o1 );
-console.log( o1.a ); // 2
+<span class="next">foo( o1 );
+console.log( o1.a ); // 2</span>
 
-foo( o2 );
-console.log( o2.a ); // undefined
-console.log( a ); // 2 -- Oops, leaked global!</code></pre>
+<span class="next">foo( o2 );
+console.log( o2.a ); // undefined</span>
+<span class="next">console.log( a ); // 2 -- Упс, появилась новая глобальная переменная!</span></code></pre>
 	</section>
 
 	<section class="slide" id="setTimeoutInterval">
@@ -394,13 +394,15 @@ console.log(multiply(2, 4)); // 8
 
 	<section class="slide" id="hidingInScopeSample">
 		<h2>Пример без сокрытия в scope = антипатерн</h2>
-		<pre><code style="font-size: 22px">function doSomething(a) {
+		<pre><code style="font-size: 18px">function doSomething(a) {
     b = a + doSomethingElse( a * 2 );
     return b * 3;
 }
+
 function doSomethingElse(a) {
     return a - 1;
 }
+
 var b;
 console.log(doSomething( 2 )); // 15
 		</code></pre>
@@ -408,10 +410,11 @@ console.log(doSomething( 2 )); // 15
 
 	<section class="slide" id="hidingInScopeSample2">
 		<h2>Пример с сокрытием в scope</h2>
-		<pre><code style="font-size: 22px">function doSomething(a) {
+		<pre><code style="font-size: 18px">function doSomething(a) {
     function doSomethingElse(a) {
         return a - 1;
     }
+
     var b = a + doSomethingElse( a * 2 );
     return b * 3;
 }
@@ -424,11 +427,11 @@ console.log(doSomething( 2 )); // 15
 		<h2>Создаем scope для нашего кода</h2>
 		<pre><code style="font-size: 22px">var a = 2;
 
-function foo() { 	// добавь это
+<span class="newInCode">function foo() {</span> 	// добавь это
     var a = 3;
     console.log( a ); // 3
-} 					// и это
-foo(); 				// и это
+<span class="newInCode">} 					// и это
+foo();</span> 				// и это
 
 console.log( a ); // 2</code></pre>
 	</section>
@@ -436,26 +439,28 @@ console.log( a ); // 2</code></pre>
 	<section class="slide" id="hidingInScopeSampleEffective">
 		<h2>Как лучше скрыть переменные в scope?</h2>
 		<p>IIFE - Immediately Invoked Function Expression</p>
-		<pre><code style="font-size: 22px">var a = 2;
-(function IIFE(){ 	// -- добавь это
+		<pre><code style="font-size: 18px">var a = 2;
+
+<span class="newInCode">(function IIFE(){</span> 	// -- добавь это
     var a = 3;
     console.log( a ); // 3
-})(); 				// -- и это
+<span class="newInCode">})();</span> 				// -- и это
+
 console.log( a ); // 2</code></pre>
 	</section>
 
 	<section class="slide" id="IIFE">
 		<h2>Использование IIFE</h2>
-		<pre><code style="font-size: 18px">var User = (function UserModule( groups ){
+		<pre><code style="font-size: 18px">var User = <span class="newInCode">(function UserModule( groups ){</span>
 
-    var user = {}
-
-    user.login = function(user, pass){ /* some code */ }
-    user.addGroup = function(g){ /* some code */ }
+    var user = {
+	    login: function(user, pass){ /* some code */ }
+	    addGroup: function(g){ /* some code */ }
+	};
 
     return user;
 
-})( Groups );</code></pre>
+<span class="newInCode">})( Groups );</span></code></pre>
 	</section>
 
 
@@ -479,7 +484,7 @@ console.log( a ); // 2</code></pre>
 		<h2>Решение проблемы</h2>
 		<pre style="margin-top: 84px;"><code style="font-size: 16px">(function foo() {
     function bar(a) {
-        var i = 3; // добавили var
+    	<span class="newInCode">var</span> i = 3; // добавили var
         console.log( a + i );
     }
 
@@ -575,6 +580,9 @@ var bar = 2;
 </code></pre>
 	</section>
 
+
+
+<!--
 	<section class="slide" id="garbageCollection">
 		<h2>Сборка мусора</h2>
 		<p>Переменная someReallyBigData будет висеть в памяти пока не истекет таймер</p>
@@ -609,6 +617,11 @@ var bar = 2;
 </code></pre>
 	</section>
 
+	-->
+
+
+
+
 	<section class="slide" id="const">
 		<h2>Использование const</h2>
 		<p>Аналогично let, const создается в текущем блоке</p>
@@ -624,13 +637,6 @@ if (foo) {
 
 console.log( a ); // 3
 console.log( b ); // ReferenceError!</code></pre>
-	</section>
-
-	<section class="slide" id="letInLoops">
-		<h2>Использование let в циклах</h2>
-		<p></p>
-
-<pre><code style="font-size: 16px"></code></pre>
 	</section>
 
 	<section class="slide" id="hoisting">
@@ -709,22 +715,71 @@ foo(2); // в данном случае все ок
 bar(2); // ReferenceError: bar is not defined</code></pre>
 	</section>
 
+	<section class="slide" id="functionHoisting4">
+		<h2>Hoisting из других блоков</h2>
+
+		<pre style="float: left; width: 50%;"><code style="font-size: 18px">if (true){
+	var a = 10;
+}</code></pre>
+
+		<pre style="float: left;" class="next"><code style="font-size: 18px"><span class="newInCode">var a;</span>
+if (true){
+	a = 10;
+}</code></pre>
+
+
+
+<div style="clear: both;"></div>
+
+
+
+		<div class="next">
+<pre style="float: left; width: 50%;"><code style="font-size: 18px">for (var i = 0; i < 5; i++){
+	var j = i * 2;
+	console.log(i, j);
+}</code></pre>
+
+<pre style="float: left;" class="next"><code style="font-size: 18px"><span class="newInCode">var j, i;</span>
+for (i = 0; i < 5; i++){
+	j = i * 2;
+	console.log(i, j);
+}</code></pre>
+		</div>
+
+	</section>
+
 
 	<section class="slide" id="functionsFirst">
 		<h2>Что раньше, функции или переменные?</h2>
 		<p>При объявлении функции и переменной с одинаковым именем, функции получают приоритет!</p>
 
-<pre><code style="font-size: 20px">foo(); // 1
+<pre style="float: left; width: 50%;"><code style="font-size: 14px">foo(); // 1
 var foo;
+
 function foo() {
     console.log( 1 );
 }
+
 foo = function() {
     console.log( 2 );
 };</code></pre>
 
+<pre style="float: left;" class="next"><code style="font-size: 14px">function foo() {
+    console.log( 1 );
+}
+
+var foo;
+foo(); // 1
+
+foo = function() {
+    console.log( 2 );
+};
+<span class="next">foo(); // 2</span>
+</code></pre>
+
 	</section>
 
+<!--
 	<section class="slide" id="functionsFirst2">
 		<h2>Что раньше, функции или переменные?</h2>
 
@@ -743,11 +798,13 @@ foo = function() {
 </code></pre>
 
 	</section>
+-->
+
 
 	<section class="slide" id="functionsFirst3">
 		<h2>Еще один пример</h2>
 
-<pre><code style="font-size: 16px">foo(); // 3
+<pre style="float: left; width: 50%;"><code style="font-size: 14px">foo(); // 3
 
 function foo() { console.log( 1 ); }
 
@@ -759,6 +816,20 @@ foo(); // 2
 
 function foo() { console.log( 3 ); }
 
+foo(); // 2
+</code></pre>
+
+<pre style="float: left;" class="next"><code style="font-size: 14px">function foo() { console.log( 1 ); }
+function foo() { console.log( 3 ); }
+
+var foo;
+
+foo(); // 3
+foo(); // 3
+
+foo = function() { console.log( 2 ); };
+
+foo(); // 2
 foo(); // 2
 </code></pre>
 
@@ -914,8 +985,7 @@ setupBot( "Closure Bot 2", "#bot_2" );</code></pre>
 function timer(){
 	console.log(i);
 }
-<span class="next">
-i++;
+<span class="next">i++;
 i++;
 i++;
 i++;
@@ -923,10 +993,9 @@ i++;
 timer(); // 4
 timer(); // 4
 timer(); // 4
-timer(); // 4
-</span>
-</code></pre>
-	</div>
+timer(); // 4</span></code></pre></div>
+
+	<p class="next">Особенности работы таймеров <a target="_blank" href="https://habrahabr.ru/post/138062/">https://habrahabr.ru/post/138062/</a></p>
 
 	</section>
 
@@ -954,8 +1023,8 @@ timer(); // 4
     	// на каждую итерацию цикла
     	var j = i; 
         setTimeout( function timer(){
-            console.log( i );
-        }, i * 1000 );
+            console.log( j );
+        }, j * 1000 );
 
     })(); // конец IIFE
 }
@@ -963,6 +1032,40 @@ timer(); // 4
 	</div>
 
 	</section>
+
+
+
+	<section class="slide" id="closureAndLoopsExampleSolution2">
+		<h2>Решение проблемы, вариант №2</h2>
+
+
+		<div style="float: left; width: 50%;">
+			<p>Старый вариант:</p>
+			<pre><code style="font-size: 14px">for (var i = 0; i < 4; i++) {
+    setTimeout( function timer(){
+        console.log( i );
+    }, i * 1000 );
+}
+</code></pre>
+		</div>
+
+		<div style="float: left; width: 50%;">
+			<p>Новый вариант:</p>
+			<pre><code style="font-size: 14px">var _loop = function (i) {
+    setTimeout(function timer() {
+        console.log(i);
+    }, i * 1000);
+};
+
+for (var i = 0; i < 4; i++) {
+    _loop(i);
+}
+</code></pre>
+	</div>
+
+	</section>
+
+
 
 	<section class="slide" id="closureAndLoopsExampleSolutionWithLet">
 		<h2>Решение проблемы с помошью let</h2>
@@ -1033,6 +1136,107 @@ foo.doAnother(); // 1 ! 2 ! 3
 </code></pre>
 	</div>
 	</section>
+
+
+	<section class="slide" id="closureMemoryLeak">
+		<h2>Утечка памяти, пример №1</h2>
+
+		<pre><code style="font-size: 16px">var run = function () {
+	var str = new Array(1000000).join('*'); // очень большая строка
+
+	var doSomethingWithStr = function () {
+		if (str === 'something'){
+			console.log("str was something");
+		}
+	};
+
+	doSomethingWithStr();
+};
+
+setInterval(run, 1000);</code></pre>
+	</section>
+
+	<section class="slide" id="closureMemoryLeak2">
+		<h2>Утечка памяти, пример №1</h2>
+
+		<pre><code style="font-size: 16px">var run = function () {
+	var str = new Array(1000000).join('*'); // очень большая строка
+
+	var logIt = function () {
+		console.log('interval');
+	};
+
+	setInterval(logIt, 100);
+};
+
+setInterval(run, 1000);</code></pre>
+	</section>
+
+	<section class="slide" id="closureMemoryLeak3">
+		<h2>Утечка памяти, пример №1</h2>
+
+		<pre><code style="font-size: 14px">var run = function () {
+	var str = new Array(1000000).join('*'); // очень большая строка
+	
+	var doSomethingWithStr = function () {
+		if (str === 'something') console.log("str was something");
+	};
+	doSomethingWithStr();
+
+	var logIt = function () {
+		console.log('interval');
+	};
+	setInterval(logIt, 100);
+};
+
+setInterval(run, 1000);</code></pre>
+	</section>
+
+
+	<section class="slide" id="closureMemoryLeakSolution">
+		<h2>Утечка памяти, пример №1, решение</h2>
+
+		<pre><code style="font-size: 12px">var run = function () {
+	<span class="newInCode">(function(){</span>     // обернем наш код в IIFE
+		var str = new Array(1000000).join('*'); // очень большая строка
+		
+		var doSomethingWithStr = function () {
+			if (str === 'something') console.log("str was something");
+		};
+		doSomethingWithStr();
+	<span class="newInCode">})();</span>            // конец IIFE
+
+	var logIt = function () {
+		console.log('interval');
+	};
+	setInterval(logIt, 100);
+};
+
+setInterval(run, 1000);</code></pre>
+	</section>
+
+	<section class="slide" id="closureMemoryLeakSolution2">
+		<h2>Утечка памяти, пример №1, решение №2</h2>
+
+		<pre><code style="font-size: 12px">var run = function () {
+	<span class="newInCode">{</span>     // block scope при помощи let
+		<span class="newInCode">let</span> str = new Array(1000000).join('*'); // очень большая строка
+		
+		<span class="newInCode">let</span> doSomethingWithStr = function () {
+			if (str === 'something') console.log("str was something");
+		};
+		doSomethingWithStr();
+	<span class="newInCode">}</span>
+
+	var logIt = function () {
+		console.log('interval');
+	};
+	setInterval(logIt, 100);
+};
+
+setInterval(run, 1000);</code></pre>
+	</section>
+
 
 	<section class="slide" id="thansForWatching">
 		<h2 style="text-align: center; margin-top: 150px;">Спасибо за внимание ;)</h2>

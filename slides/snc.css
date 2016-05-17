@@ -14,6 +14,9 @@ p {
     border-radius: 5px;
 }
 
+.newInCode {
+	color: #DE0000;
+}
 
 // span.code {
 // 	background-color: #eee;
