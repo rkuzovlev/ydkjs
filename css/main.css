@@ -43,7 +43,7 @@ table {
 }
 
 a {
-	color: #03bf00;
+	color: #009CDE;
 	text-decoration: none;
 }
 
@@ -174,9 +174,39 @@ header .desc .books a img {
 }
 
 .donate {
-	height: 150px;
-	background-color: gray;
+	background-color: #d0d0d0;
+	text-align: center;
 }
+
+.donate > p {
+    display: inline-block;
+    max-width: 600px;
+    font-size: 22px;
+    line-height: 30px;
+    margin-top: 50px;
+    margin-right: 20px;
+}
+
+.donate ul {
+	display: inline-block;
+    vertical-align: top;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.donate ul li {
+    display: inline-block;
+    margin: 10px;
+    vertical-align: top;
+}
+
+.donate ul li img {
+    height: 70px;
+    margin-bottom: 10px;
+}
+// .donate ul li a {
+// 	color: #009CDE;
+// }
 
 main {
 	display: -webkit-box;
@@ -255,8 +285,8 @@ main article .content .status {
 }
 
 main article .content .status.ready {
-	color: #00ce0a;
-	border-color: #00ce0a;
+	color: #009CDE;
+	border-color: #009CDE;
     cursor: pointer;
 }
 
