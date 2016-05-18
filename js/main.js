@@ -2,7 +2,7 @@ $(document).ready(function() {
 	var body = $('body');
 	var scroller = $('.scroll span');
 
-	$('.scroll').on('click', function() {
+	$('.scroll span').on('click', function() {
 		var offset = $('.donate').offset();
 		body.animate({scrollTop: offset.top}, 1000);
 	});
