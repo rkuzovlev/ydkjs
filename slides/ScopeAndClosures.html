@@ -6,6 +6,7 @@
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="shower/themes/ribbon/styles/screen-16x10.css">
+	<link rel="stylesheet" href="default.css">
 	<link rel="stylesheet" href="snc.css">
 
 	<link rel="stylesheet" href="/highlight/styles/default.css">
@@ -22,7 +23,7 @@
 		<img src="pictures/snc/bookcover.jpg" alt="">
 		<div class="text">
 			<h2>You don't know JS</h2>
-			<h3>Scope & Closure <i>Пространство имен и Замыкание</i></h3>
+			<h3>Scope & Closure<br /><i>Пространство имен и Замыкание</i></h3>
 			<ul>
 				<li><a href="#whatIsScope" title="">Что такое Scope?</a></li>
 				<li><a href="#lexicalScope" title="">Lexical Scope</a></li>
@@ -36,8 +37,8 @@
 	<section class="slide" id="jsCore">
 		<h2>Компоненты JS (условно)</h2>
 		<ol>
-			<li>Compiler - парсить исходники и генерация кода</li>
-			<li>Engine - исполнение скомпилированного байткода (машинный код V8)</li>
+			<li>Compiler - парсит исходники и генерирует код для Engine</li>
+			<li>Engine - исполнение скомпилированного байткода</li>
 			<li>Scope - хранение и "управление" переменными и функциями</li>
 		</ol>
 	</section>
@@ -45,6 +46,7 @@
 	<section class="slide" id="whatIsScope">
 		<h2>Что такое scope?</h2>
 		<p>Хорошо структурированный набор правил для хранения переменных и функций, а также получение доступа к ним в дальнейшем</p>
+		<p>Функции:</p>
 		<ol>
 			<li>Создать переменую и функцию(ссылку на фукцию)</li>
 			<li>Модификация и получение переменной/функции</li>
@@ -52,27 +54,43 @@
 		</ol>
 	</section>
 
+<!--
 	<section class="slide" id="compiler">
 		<h2>Compiler</h2>
 		<ol>
 			<li>Tokenizing/Lexing - разделение кода программы на куски(chunks) называемые токены. <br />
 				Для примера <code class="js">var a = 2;</code> преобразуется в <code class="js">var</code>, <code class="js">a</code>, <code class="js">=</code>, <code class="js">2</code> и <code class="js">;</code></li>
 			<li>Parsing - получает массив токенов и преобразует их в AST (Abstract Syntax Tree). 
-			<!-- Структура данных (дерево) - промежуточное представления программы (внутренние вершины - операторы, листья операнды). --> 
+			/////// Структура данных (дерево) - промежуточное представления программы (внутренние вершины - операторы, листья операнды). //////
 			Можно потестировать на <a target="_blank" href="https://astexplorer.net/" title="">astexplorer.net</a></li>
 			<li>Code-Generation - Преобразование AST в исполняемый код, и заполняет scope переменными и функциями</li>
 		</ol>
 		<p>Данные этапы гораздо сложнее, они также включают различные оптимизации производительности и исключение излишних элементов</p>
 	</section>
+-->
+
+	<section class="slide" id="compiler">
+		<h2>Compiler</h2>
+		<ul>
+			<li>Разбирает исходник на токены</li>
+			<li>Заполняет Scope переменными</li>
+			<li>Компилирует код в байткод (машинный код V8)</li>
+		</ul>
+	</section>
 
 	<section class="slide" id="compilerSteps">
-		<h2>Compiler - 2 шага</h2>
+		<h2>Compiler</h2>
+		
 		<p>Предположим что у нас есть код <code class="js">var a = 2;</code></p>
+
 		<ol>
-			<li>Compiler сталкивается с <code class="js">var a</code> и пытается найти переменную <code class="js">a</code> в scope. Если переменная не найдена, то она добавляется в scope, иначе ничего не происходит.</li>
+			<li>Compiler сталкивается с <code class="js">var a</code> и пытается добавить переменную <code class="js">a</code> в scope. Если переменная уже существует, то просто игнорируем.</li>
 			<li>Compiler генерирует код для Engine, в данном случае <code class="js">a = 2</code></li>
 		</ol>
+
+		<p>После компиляции в scope уже будет переменная <code class="js">a</code>, а код для Engine будет такой <code class="js">a = 2</code></p>
 	</section>
+
 
 
 	<section class="slide" id="engineScopeCompilerConversation">
@@ -138,41 +156,25 @@ Engine: Cool. Passing the value of a, which is 2, into log(..).
 
 	<section class="slide" id="quiz">
 		<h2>Усвоим материал</h2>
-		<pre>
-			<code class="js">function foo(a) {
+		<div style="display: inline-block; width: 49%;">
+		<p>Для компилятора</p>
+		<pre><code class="js">function foo(a) {
     var b = a;
     return a + b;
 }
 var c = foo( 2 );</code>
 		</pre>
-	</section>
+		</div>
 
-	<section class="slide" id="nestedScope">
-		<h2>Вложенный(Nested) scope</h2>
-<div class="wrapper">
-		<pre>
-			<code class="js"><div class="nested" style="background-color: #8EFF8A;"><div class="nested" style="background-color: #8AE2FF;">function foo(a) {
-    console.log( a + b );
+		<div style="display: inline-block; width: 49%;">
+		<p>Для движка</p>
+		<pre><code class="js">foo(a) {
+    b = a;
+    return a + b;
 }
-</div>
-var b = 2;
-foo( 2 ); // 4
-</div></code>
-</div>
-			<ol>
-				<li><code class="js" style="background-color: #8EFF8A;">global</code> scope - переменная <code class="js">b</code> и функция <code class="js">foo</code></li>
-				<li><code class="js" style="background-color: #8AE2FF;">foo</code> scope - переменная <code class="js">a</code></li>
-			</ol>
+c = foo( 2 );</code>
 		</pre>
-
-<!--
-Look at https://github.com/getify/You-Dont-Know-JS/blob/master/scope%20&%20closures/ch1.md#nested-scope
-
-Engine: "Hey, Scope of foo, ever heard of b? Got an RHS reference for it."
-Scope: "Nope, never heard of it. Go fish."
-Engine: "Hey, Scope outside of foo, oh you're the global Scope, ok cool. Ever heard of b? Got an RHS reference for it."
-Scope: "Yep, sure have. Here ya go."
--->
+		</div>
 	</section>
 
 
@@ -207,6 +209,58 @@ foo( 2 ); // TypeError
 		</pre>
 	</section>
 
+
+	<section class="slide" id="nestedScope">
+		<h2>Вложенный(Nested) scope</h2>
+<div class="wrapper">
+		<pre>
+			<code class="js"><div class="nested" style="background-color: #8EFF8A;"><div class="nested" style="background-color: #8AE2FF;">function foo(a) {
+    console.log( a + b );
+}
+</div>
+var b = 2;
+foo( 2 ); // 4
+</div></code>
+</div>
+			<ol>
+				<li><code class="js" style="background-color: #8EFF8A;">global</code> scope - переменная <code class="js">b</code> и функция <code class="js">foo</code></li>
+				<li><code class="js" style="background-color: #8AE2FF;">foo</code> scope - переменная <code class="js">a</code></li>
+			</ol>
+		</pre>
+
+<!--
+Look at https://github.com/getify/You-Dont-Know-JS/blob/master/scope%20&%20closures/ch1.md#nested-scope
+
+Engine: "Hey, Scope of foo, ever heard of b? Got an RHS reference for it."
+Scope: "Nope, never heard of it. Go fish."
+Engine: "Hey, Scope outside of foo, oh you're the global Scope, ok cool. Ever heard of b? Got an RHS reference for it."
+Scope: "Yep, sure have. Here ya go."
+-->
+	</section>
+
+
+	<section class="slide" id="functionScope">
+		<h2>Scope From Functions</h2>
+		<div class="wrapper">
+		<pre>
+			<code class="js" style="font-size: 18px;"><div class="nested" style="background-color: #8EFF8A;">function foo(a) {
+    var b = 2;
+    // some code
+    <div class="nested" style="background-color: #8AE2FF;">function bar() {
+    // ...
+}</div>
+    // more code
+    var c = 3;
+}</div>
+
+</code></pre></div>
+		
+		<ol>
+			<li>Каждая функция создает свое пространство имен</li>
+			<li>Функция <b>foo</b> содержит переменные <code class="js">a</code>, <code class="js">b</code>, <code class="js">c</code> и функцию <code class="js">bar</code></li>
+			<li>Переменные <code class="js">a</code>, <code class="js">b</code>, <code class="js">c</code> и функция <code class="js">bar</code> доступны из функции <code class="js">bar</code> но ничего кроме <code class="js">foo</code> недоступно из глобального scope</li>
+		</ol>
+	</section>
 
 
 <!--
@@ -357,29 +411,6 @@ bar()</code></pre>
 		<pre><code class="js">var multiply = new Function("x", "y", "return x * y")
 console.log(multiply(2, 4)); // 8
 </code></pre>
-	</section>
-
-	<section class="slide" id="functionScope">
-		<h2>Scope From Functions</h2>
-		<div class="wrapper">
-		<pre>
-			<code class="js" style="font-size: 18px;"><div class="nested" style="background-color: #8EFF8A;">function foo(a) {
-    var b = 2;
-    // some code
-    <div class="nested" style="background-color: #8AE2FF;">function bar() {
-    // ...
-}</div>
-    // more code
-    var c = 3;
-}</div>
-
-</code></pre></div>
-		
-		<ol>
-			<li>Каждая функция создает свое пространство имен</li>
-			<li>Функция <b>foo</b> содержит переменные <code class="js">a</code>, <code class="js">b</code>, <code class="js">c</code> и функцию <code class="js">bar</code></li>
-			<li>Переменные <code class="js">a</code>, <code class="js">b</code>, <code class="js">c</code> и функция <code class="js">bar</code> доступны из функции <code class="js">bar</code> но ничего кроме <code class="js">foo</code> недоступно из глобального scope</li>
-		</ol>
 	</section>
 
 	<section class="slide" id="hidingInScope">
@@ -565,21 +596,6 @@ console.log( bar ); // ReferenceError</code></pre>
 	</section>
 
 
-	<section class="slide" id="let3">
-		<h2>Ключевое слово let</h2>
-
-		<p>Переменная созданная при помощи let не "поднимается" наверх как это происходит с var</p>
-		
-		<p>Используем let:</p>
-		<pre><code style="font-size: 18px">console.log( bar ); // ReferenceError!
-let bar = 2;
-</code></pre>
-		<p>Используем var:</p>
-<pre><code style="font-size: 18px">console.log( bar ); // undefined
-var bar = 2;
-</code></pre>
-	</section>
-
 
 
 <!--
@@ -678,6 +694,23 @@ a = 2;</code></pre>
 
 
 	</section>
+
+
+	<section class="slide" id="let3">
+		<h2>Ключевое слово let</h2>
+
+		<p>Переменная созданная при помощи let не "поднимается" наверх как это происходит с var</p>
+		
+		<p>Используем let:</p>
+		<pre><code style="font-size: 18px">console.log( bar ); // ReferenceError!
+let bar = 2;
+</code></pre>
+		<p>Используем var:</p>
+<pre><code style="font-size: 18px">console.log( bar ); // undefined
+var bar = 2;
+</code></pre>
+	</section>
+
 
 	<section class="slide" id="functionHoisting">
 		<h2>Hoisting функций</h2>
@@ -1139,7 +1172,7 @@ foo.doAnother(); // 1 ! 2 ! 3
 
 
 	<section class="slide" id="closureMemoryLeak">
-		<h2>Утечка памяти, пример №1</h2>
+		<h2>Утечка памяти</h2>
 
 		<pre><code style="font-size: 16px">var run = function () {
 	var str = new Array(1000000).join('*'); // очень большая строка
@@ -1157,7 +1190,7 @@ setInterval(run, 1000);</code></pre>
 	</section>
 
 	<section class="slide" id="closureMemoryLeak2">
-		<h2>Утечка памяти, пример №1</h2>
+		<h2>Утечка памяти</h2>
 
 		<pre><code style="font-size: 16px">var run = function () {
 	var str = new Array(1000000).join('*'); // очень большая строка
@@ -1173,7 +1206,7 @@ setInterval(run, 1000);</code></pre>
 	</section>
 
 	<section class="slide" id="closureMemoryLeak3">
-		<h2>Утечка памяти, пример №1</h2>
+		<h2>Утечка памяти</h2>
 
 		<pre><code style="font-size: 14px">var run = function () {
 	var str = new Array(1000000).join('*'); // очень большая строка
@@ -1194,7 +1227,7 @@ setInterval(run, 1000);</code></pre>
 
 
 	<section class="slide" id="closureMemoryLeakSolution">
-		<h2>Утечка памяти, пример №1, решение</h2>
+		<h2>Утечка памяти, решение</h2>
 
 		<pre><code style="font-size: 12px">var run = function () {
 	<span class="newInCode">(function(){</span>     // обернем наш код в IIFE
@@ -1216,7 +1249,7 @@ setInterval(run, 1000);</code></pre>
 	</section>
 
 	<section class="slide" id="closureMemoryLeakSolution2">
-		<h2>Утечка памяти, пример №1, решение №2</h2>
+		<h2>Утечка памяти, решение №2</h2>
 
 		<pre><code style="font-size: 12px">var run = function () {
 	<span class="newInCode">{</span>     // block scope при помощи let
