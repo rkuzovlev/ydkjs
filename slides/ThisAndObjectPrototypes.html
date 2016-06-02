@@ -14,8 +14,8 @@
 </head>
 <body class="shower list">
 	<header class="caption">
-		<h1>Shower Presentation Engine</h1>
-		<p>Yours Truly, Famous Inc.</p>
+		<h1>You don't know JS</h1>
+		<p>this & Object Prototypes</p>
 	</header>
 	
 	<section class="slide" id="cover">
@@ -24,8 +24,9 @@
 			<h2>You don't know JS</h2>
 			<h3>this & Object Prototypes</h3>
 			<ul>
-				<li><a href="#" title="">this Or That?</a></li>
-				<li><a href="#" title="">Objects</a></li>
+				<li><a href="#thisInto" title="">this Or That?</a></li>
+				<li><a href="#allMakesSenseNow" title="">Расставим точки над и</a></li>
+				<li><a href="#objects" title="">Objects</a></li>
 				<li><a href="#" title="">Mixing (Up) "Class" Objects</a></li>
 				<li><a href="#" title="">Prototypes</a></li>
 				<li><a href="#" title="">Behavior Delegation</a></li>
@@ -33,8 +34,1176 @@
 		</div>
 	</section>
 	
+	<section class="slide" id="thisInto">
+		<h2>this</h2>
+		<p><code class="js">this</code> - один из наиболее запутанных механизмов в JS и сбивает с толку множество программистов</p>
+		<p><code class="js">this</code> это специальное ключевое слово которое определяется при каждом вызове функции</p>
+	</section>
 
-	<section class="slide" id="thansForWatching">
+
+	<section class="slide" id="thisSample">
+		<h2>this пример</h2>
+		<pre><code class="js" style="font-size: 12px;">function identify() {
+    return this.name.toUpperCase();
+}
+
+function speak() {
+    var greeting = "Hello, I'm " + identify.call( this );
+    console.log( greeting );
+}
+
+var me = { name: "Kyle" };
+var you = { name: "Reader" };
+
+identify.call( me ); // KYLE
+identify.call( you ); // READER
+
+speak.call( me ); // Hello, I'm KYLE
+speak.call( you ); // Hello, I'm READER</code></pre>
+	</section>
+
+
+	<section class="slide" id="thisSampleChanged">
+		<h2>this пример</h2>
+		<pre><code class="js" style="font-size: 12px;">function identify(context) {
+    return context.name.toUpperCase();
+}
+
+function speak(context) {
+    var greeting = "Hello, I'm " + identify( context );
+    console.log( greeting );
+}
+
+var me = { name: "Kyle" };
+var you = { name: "Reader" };
+
+identify( you ); // READER
+speak( me ); // Hello, I'm KYLE</code></pre>
+	</section>
+
+
+	<section class="slide" id="thisWrong">
+		<h2>Непонимание this</h2>
+		<p>Для того, чтобы понять как на самом деле работает <code class="js">this</code>, нам нужно посмотреть на наиболее частые ошибки в понимании его работы.</p>
+		<ul>
+			<li><code class="js">this</code> - указывает на текущий Scope</li>
+			<li><code class="js">this</code> - указывает на функцию которая выполняется</li>
+		</ul>
+	</section>
+
+
+
+	<section class="slide" id="thisWrong2">
+		<h2>Ошибочные концепции связанные с this</h2>
+		<p><code class="js">this</code> - указывает на текущий Scope</p>
+
+		<pre><code class="js" style="font-size: 14px;">var foo = function (x){
+	let y1 = doSomething(x)
+	let y2 = doSomething(this.x) // -- пытаемся получить x через this (так не работает)
+}
+
+foo(12);</pre>
+	</section>
+
+
+
+	<section class="slide" id="thisWrong3">
+		<h2>Ошибочные концепции связанные с this</h2>
+		<p><code class="js">this</code> - указывает на функцию которая выполняется</p>
+		<p>Какой в этом может быть смысл? Рекурсия или unbind после выполнения.</p>
+
+		<pre><code class="js" style="font-size: 12px;">var foo = function (x){
+	let y = doSomething(x)
+	this(y) // -- рекурсивный вызов (так не работает)
+}</code></pre>
+
+<pre><code class="js" style="font-size: 12px;">let example = document.getElementById("example");
+example.addEventListener("click", function(x){
+	doSomething(x);
+	example.removeEventListener("click", this); // -- unbind функции (так не работает)
+});</code></pre>
+	</section>
+
+	<section class="slide" id="thisWrong4">
+		<h2>Ошибочные концепции связанные с this</h2>
+		<p>Если бы <code class="js">this</code> указывала на функцию, то мы бы смогли хранить в ней необходимые значения. Т.к. функции являются объектом и мы можем добавлять новые поля.</p>
+
+		<pre style="float: left; width: 50%;"><code class="js" style="font-size: 12px;">function foo(num) {
+    console.log( "foo: " + num );
+    this.count++;
+}
+foo.count = 0;
+
+for (var i = 0; i < 10; i++) {
+    if (i > 5) {
+        foo( i );
+    }
+}</code></pre>
+
+<pre style="float: left; width: 50%;"><code class="js" style="font-size: 12px;">
+<span class="next">// foo: 6
+// foo: 7
+// foo: 8
+// foo: 9</span>
+
+<span class="next">console.log( foo.count ); // 0 -- WTF?</span>
+</code></pre>
+	</section>
+
+	<section class="slide" id="thisWrong4.5">
+		<h2>Ошибочные концепции связанные с this</h2>
+		<p>Что произошло?</p>
+
+		<p>Если мы не меняли переменную <code class="js">foo.count</code> то что же тогда изменялось?</p>
+
+		<p>На самом деле появилась новая глобальная переменная <code class="js">count</code> которая имеет значение <code class="js">NaN</code></p>
+
+		<p>Как это произошло и почему, мы узнаем немного дальше</p>
+	</section>
+
+
+	<section class="slide" id="thisWrongSolution">
+		<h2>Как сделать предыдущий пример работающим?</h2>
+		<pre><code class="js" style="font-size: 14px;">function foo(num) {
+    console.log( "foo: " + num );
+    data.count++;
+}
+
+var data = { count: 0 };
+
+for (var i = 0; i < 10; i++) {
+    if (i > 5) {
+        foo( i );
+    }
+}</code></pre>
+	</section>
+
+
+	<section class="slide" id="thisWrongSolution2">
+		<h2>Еще один способ решения проблемы</h2>
+		<pre><code class="js" style="font-size: 14px;">function foo() {
+	console.log( "foo: " + num );
+    foo.count++; // `foo` ссылаемся сами на себя
+}
+
+foo.count = 0;
+
+for (var i = 0; i < 10; i++) {
+    if (i > 5) {
+        foo( i );
+    }
+}</code></pre>
+	</section>
+
+
+	<section class="slide" id="thisWrong5">
+		<p>У данного подхода есть недостаток. Мы не можем использовать такой подход в анонимных функциях.</p>
+		<pre><code class="js" style="font-size: 14px;">setTimeout( function(){
+    // анонимная функция (без имени)
+    // мы не можем сослаться на саму себя
+}, 10 );</code></pre>
+
+	<p class="next">Есть один вариант как получить ссылку на функцию, даже если она анонимная, просто вызвав <code class="js">arguments.callee</code></p>
+	<p class="next">Но в строгом режиме ES5 (strict mode) данный метод запрещен, и использовать его не рекомендуется!</p>
+	</section>
+
+
+	<section class="slide" id="allMakesSenseNow">
+		<h2>Расставим точки над и!</h2>
+		<p>Мы рассмотерли множество примеров как <code class="js">this</code> не работает, и нашли множество способов как обойтись без него.</p>
+		<p>В следующих слайдах мы подробно рассмотрим что же такое <code class="js">this</code> и откуда оно берется!</p>
+		<p>Так же узнаем почему использование <code class="js">this</code> ведет к написанию более чистого и переиспользуемого кода.</p>
+	</section>
+
+
+	<section class="slide" id="callSiteVSCallStack">
+		<h2>call-site против call-stack</h2>
+		<p>Для того, чтобы понять что такое <code class="js">this</code> и как оно работает, нам надо понять 2 вещи:</p>
+		<ul>
+			<li><em>call-stack</em> - это стек вызовов функций</li>
+			<li><em>call-site</em> - это место в коде где функция вызывается (не путать с определяется)</li>
+		</ul>
+	</section>
+
+	<section class="slide" id="callStack">
+		<h2>call-stack</h2>
+		<!-- <p>Стек вызовов функции в JS</p> -->
+		<img style="width: 700px;" src="pictures/taop/call_stack.png" alt="call stack">
+		<!-- <p>Можно потестить на странице <a href="http://latentflip.com/loupe/">http://latentflip.com/loupe/</a></p> -->
+	</section>
+
+	<section class="slide" id="callSite">
+		<h2>call-site - место вызова функции</h2>
+		<pre><code class="js" style="font-size: 12px;">function baz() {
+    // текущий call-stack: `baz`
+    console.log( "baz" );
+    bar(); // call-site для `bar`
+}
+
+function bar() {
+    // текущий call-stack: `baz` -> `bar`
+    console.log( "bar" );
+    foo(); // call-site для `foo`
+}
+
+function foo() {
+    // текущий call-stack: `baz` -> `bar` -> `foo`
+    console.log( "foo" );
+}
+
+baz(); // call-site для `baz`</code></pre>
+	</section>
+
+	<section class="slide" id="rules">
+		<h2>Правила формирования this</h2>
+		
+		<p>Надо придерживаться 4-х правил при вычислении значения <code class="js">this</code> для вызваной функции.</p>
+
+		<ol>
+			<li>Default Binding - связывание по умолчанию</li>
+			<li>Implicit Binding - скрытое связывание</li>
+			<li>Explicit Binding - явное связывание</li>
+		</ol>
+	</section>
+
+	<section class="slide" id="defaultBinding">
+		<h2>Default Binding - связывание по умолчанию</h2>
+		<p>Самый распространенный метод вызова функции - непосредственный(обычный) вызов функции</p>
+		<p>Данное правило работает всегда, когда не подходят другие правила<!-- <em>(рассмотрим далее)</em> --></p>
+		<pre><code class="js" style="font-size: 14px;">function foo() {
+    console.log( this.a );  <span class="next">// this - в данном случае является ссылкой на глобальный объект</span>
+}
+
+var a = 2;
+
+foo(); <span class="next">// 2</span></code></pre>
+	</section>
+
+
+	<section class="slide" id="defaultBinding2">
+		<h2>Default Binding - связывание по умолчанию</h2>
+		<p>В нашем примере функция <code class="js">foo</code> вызвана самым обычным способом <code class="js">foo();</code>, поэтому <code class="js">this</code> в нутри ее будет являться ссылкой на глобальный объект.</p>
+		<p>Это относиться ко всем функциям вызваным подобным образом, в не зависимости от того, в каком Lexical Scope они определены.</p>
+		<p><strong>Важно только то, как мы вызываем функцию (call-site), и ничего другого!!</strong></p>
+	</section>
+	
+	<section class="slide" id="defaultBindingStrictMode">
+		<h2>Default Binding и strict mode</h2>
+
+		<p>Нельзя использовать Default Binding в строгом режиме ES5</p>
+		<p><code class="js">this</code> будет равна <code class="js">undefined</code> если <em>функция</em> или одна из <em>родительских функций</em> или <em>global scope</em> находятся в <em>strict mode</em></p>
+
+		<pre><code class="js" style="font-size: 14px;">function foo() {
+    "use strict";
+
+    console.log( this.a );
+}
+
+var a = 2;
+
+foo(); // TypeError: `this` is `undefined`</code></pre>
+	</section>
+
+	<section class="slide" id="defaultBindingStrictMode2">
+		<h2>Default Binding и strict mode</h2>
+		
+		<p>Пример с глобальным strict mode</p>
+		
+		<pre><code class="js" style="font-size: 14px;">"use strict";
+
+function foo() {
+    console.log( this.a );
+}
+
+var a = 2;
+
+foo(); // TypeError: `this` is `undefined`</code></pre>
+	</section>
+
+	<section class="slide" id="defaultBindingStrictMode3">
+		<h2>Default Binding и strict mode</h2>
+
+		<p>А вот так работать будет!</p>
+		
+		<pre><code class="js" style="font-size: 14px;">function foo() {
+    console.log( this.a );
+}
+
+var a = 2;
+
+(function(){
+    "use strict";
+
+    foo(); // 2
+})();</code></pre>
+	</section>
+
+
+	<section class="slide" id="implicitBinding">
+		<h2>Implicit Binding - скрытое связывание</h2>
+		<p>Следующее правило работает когда функция при вызове имеет "связаный с ней объект"</p>
+
+		<pre style="width: 50%; float: left;"><code class="js" style="font-size: 14px;">function foo() {
+    console.log( this.a );
+}
+
+var obj = {
+    a: 2,
+    foo: foo
+};
+
+obj.foo(); // 2</code></pre>
+
+		<ul class="next">
+			<li><code class="js">foo</code> определена вне объекта</li>
+			<li>свойству <code class="js">foo</code> объекта <code class="js">obj</code> присвоили созданную функцию</li>
+			<li>Вызвали <code class="js">foo</code> сохраненную в объекте <code class="js">obj</code></li>
+		</ul>
+	</section>
+
+	<section class="slide" id="implicitBinding2">
+		<h2>Implicit Binding - скрытое связывание</h2>
+
+		<pre style="width: 50%; float: left;"><code class="js" style="font-size: 14px;">function foo() {
+    console.log( this.a );
+}
+
+var obj2 = {
+    a: 42,
+    foo: foo
+};
+
+var obj1 = {
+    a: 2,
+    obj2: obj2
+};
+
+obj1.<strong style="font-size: 16px;">obj2.foo();</strong> // 42  важен только последний объект obj2</code></pre>
+
+		<p>При вложенности объектов один в другой, берется контекст последнего объекта!</p>
+	</section>
+
+	<section class="slide" id="implicitBindingImplicitlyLost">
+		<h2>Implicit Binding - скрытое связывание</h2>
+		<p>Implicitly Lost - потеря связывания с объектом</p>
+		
+		<pre style="width: 50%; float: left;"><code class="js" style="font-size: 14px;">function foo() {
+    console.log( this.a );
+}
+
+var obj = {
+    a: 2,
+    foo: foo
+};
+
+var bar = obj.foo; // создаем псевдоним(alias) на функцию
+var a = "oops, global"; // `a` является гловальной переменной
+
+bar(); // выведет "oops, global"
+</code></pre>
+
+		<p>Хоть мы и "привязали" функцию к объекту, позже создали новую ссылку <code class="js">bar</code> на функцию <code class="js">foo</code></p>
+	</section>
+
+
+	<section class="slide" id="implicitBindingImplicitlyLostTimeout">
+		<h2>Implicit Binding - скрытое связывание</h2>
+		<p>Implicitly Lost - потеря связывания с объектом, пример с setTimeout</p>
+		
+		<pre><code class="js" style="font-size: 14px;">function foo() {
+    console.log( this.a );
+}
+
+var obj = {
+    a: 2,
+    foo: foo
+};
+
+var a = "oops, global"; // `a` also property on global object
+
+setTimeout( obj.foo, 100 ); // "oops, global"</code></pre>
+	</section>
+
+	<section class="slide" id="implicitBindingImplicitlyLostTimeout2">
+		<h2>Implicit Binding - скрытое связывание</h2>
+		<p>Implicitly Lost - потеря связывания с объектом, пример с setTimeout</p>
+
+		<p>Примерная работа функции setTimeout:</p>
+		
+		<pre><code class="js" style="font-size: 14px;">function setTimeout(fn, delay) { // fn - наша функция, delay - задержка
+    // ждем delay миллисекунд
+    fn(); // это наш call-site!
+}</code></pre>
+	</section>
+
+	<section class="slide" id="explicitBinding">
+		<h2>Explicit Binding - явное связывание</h2>
+		
+		<p>Для того, чтобы изменить привязку объекта к <code class="js">this</code>, можно использовать функции <code class="js">call</code> и <code class="js">apply</code></p>
+
+		<p>Данные методы запускают на выполнение выбранную функцию и задают <code class="js">this</code> только на момент текущего выполнения функции</p>
+
+		<p><code class="js">fn.apply(obj[, array])</code></p>
+		<p><code class="js">fn.call(obj[, param1[, param2[, ...]]])</code></p>
+	</section>
+
+	<section class="slide" id="explicitBindingSample">
+		<h2>Пример Explicit Binding</h2>
+		
+		<pre><code class="js" style="font-size: 14px;">function foo() {
+    console.log( this.a );
+}
+
+var a = "global";
+
+var obj = {
+    a: 2
+};
+
+<span class="next">foo.call( obj ); // 2
+foo.apply( obj ); // 2</span>
+
+<span class="next">foo( obj ); // global
+foo( obj ); // global</span></code></pre>
+	</section>
+
+
+	<section class="slide" id="explicitBindingPassSimple">
+		<h2>Explicit Binding с примитивами</h2>
+		
+		<p>Вместо объекта, функциям <code class="js">call</code> и <code class="js">apply</code> можно передать примитив <code class="js">string</code>, <code class="js">boolean</code>, <code class="js">number</code></p>
+		<p>При этом, все примитивы оборачиваются в их формы объекты <code class="js">new String(..)</code>, <code class="js">new Boolean(..)</code>, <code class="js">new Number(..)</code></p>
+	</section>
+
+
+	<section class="slide" id="hardBinding">
+		<h2>Hard Binding</h2>
+		
+		<p>Трюк при использовании explicit binding</p>
+
+		<pre><code class="js" style="font-size: 14px;">function foo() { console.log( this.a ); }
+
+var obj = { a: 2 };
+
+<span class="next">var bar = function() {
+    foo.call( obj );
+};</span>
+
+<span class="next">bar(); // 2</span>
+<span class="next">setTimeout( bar, 100 ); // 2</span>
+<span class="next">bar.call( window ); // 2</span></code></pre>
+	</section>
+
+
+	<section class="slide" id="hardBindingUsing">
+		<h2>Hard Binding - более полезный пример</h2>
+
+		<pre><code class="js" style="font-size: 14px;">function foo(something) {
+    return this.a + something;
+}
+
+var obj = {
+    a: 2
+};
+
+<span class="next">var bar = function() {
+    return foo.apply( obj, arguments );
+};</span>
+
+<span class="next">var b = bar( 3 );
+console.log( b ); // 5</span></code></pre>
+	</section>
+
+
+	<section class="slide" id="hardBindingHelper">
+		<h2>Hard Binding - создаем хелпер</h2>
+
+		<pre><code class="js" style="font-size: 14px;">function bind(fn, obj) {			// Хелпер
+    return function() {			// Функция создает замыкание
+        return fn.apply( obj, arguments );
+    };
+}
+
+<span class="next">function foo(something) {
+    return this.a + something;
+}
+
+var obj = { a: 2 };</span>
+<span class="next">var bar = bind( foo, obj );		// связываем foo и obj</span>
+
+<span class="next">console.log( bar( 3 ) ); 		// 5</span></code></pre>
+	</section>
+
+
+	<section class="slide" id="hardBindingES5">
+		<h2>ES5 Function.prototype.bind</h2>
+
+		<pre><code class="js" style="font-size: 14px;">function foo(something) {
+    return this.a + something;
+}
+
+var obj = {
+    a: 2
+};
+
+<span class="next">var bar = foo.bind( obj );</span>
+
+<span class="next">var b = bar( 3 );
+console.log( b ); // 5</span></code></pre>
+
+		<p class="next">
+			<a target="_blank" href="http://caniuse.com/#feat=es5" title="">http://caniuse.com/#feat=es5</a> 
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+			<a target="_blank" href="https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Function/bind#Polyfill" title="bind polyfill">MDN Function.prototype.bind polyfill</a>
+		</p>
+	</section>
+
+
+	<section class="slide" id="newBinding">
+		<h2>new Binding</h2>
+
+		<p>Четвертое правило связывания <code class="js">this</code> требует некоторых переосмыслений на счет объектов и функции в JS</p>
+		<p>В традиционных "класс-ориентированных" языках у нас есть конструктор. Это метод связанный со своим классом и при его использовании с оператором <code class="js">new</code>, мы его вызываем и создаем экземпляр класса.</p>
+		<p><code class="js">something = new MyClass(..);</code></p>
+		<p>Но в JS поведение ключевого слова <code class="js">new</code> сильно отличается</p>
+	</section>
+
+
+	<section class="slide" id="whatIsConstructor">
+		<h2>Что такое конструктор в JS</h2>
+
+		<p>Конструктор в JS это самая обычная функция, которая должна быть вызвана с оператором <code class="js">new</code> перед ней. Такое исполнение функции называется вызов конструктора.</p>
+	</section>
+
+	<section class="slide" id="whatIsConstructor2">
+		<h2>Как работает конструктор?</h2>
+
+		<p>Когда вызывается конструктор, следующие действия выполняются автоматически.</p>
+		<ul>
+			<li>"На лету" создается новый объект.</li>
+			<li>Новый объект связывается через прототип с функцией.</li>
+			<li>Этот-же объект становится <code class="js">this</code> для вызова данного конструктора.</li>
+			<li>Функция вызванная с оператором <code class="js">new</code> автоматически вернет вновь созданый объект в конце исполнения.</li>
+		</ul>
+	</section>
+
+	<section class="slide" id="whatIsConstructorSample">
+		<h2>Пример использования конструктора</h2>
+
+		<pre><code class="js" style="font-size: 16px;">function foo(a) {
+    this.a = a;
+}
+
+var bar = new foo( 2 );
+console.log( bar.a ); // 2</code></pre>
+	</section>
+
+
+	<section class="slide" id="multipleRules">
+		<h2>Несколько правил в одном call-site</h2>
+
+		<ul>
+			<li>Default binding имеет самый низкий приоритет.</li>
+			<li class="next">Explicit binding(<code class="js">call</code>, <code class="js">apply</code>) выше по приоритету чем implicit binding(<code class="js">obj.foo()</code>)</li>
+			<li class="next"><code class="js">new</code> binding выше по приоритету чем implicit binding(<code class="js">obj.foo()</code>)</li>
+			<li class="next">Explicit binding(<code class="js">call</code>, <code class="js">apply</code>) и <code class="js">new</code> binding не могут существовать вместе</li>
+		</ul>
+	</section>
+
+
+	<section class="slide" id="multipleRules2">
+		<h2>Explicit binding сильнее implicit binding</h2>
+
+		<pre><code class="js" style="font-size: 16px;">function foo() {
+    console.log( this.a );
+}
+
+var obj1 = { a: 2, foo: foo };
+var obj2 = { a: 3, foo: foo };
+
+obj1.foo(); // 2
+obj2.foo(); // 3
+
+obj1.foo.call( obj2 ); // 3
+obj2.foo.call( obj1 ); // 2</code></pre>
+	</section>
+
+	<section class="slide" id="multipleRules3">
+		<h2>Все вместе</h2>
+
+		<pre><code class="js" style="font-size: 14px;">function foo(something) {
+    this.a = something;
+}
+var obj1 = { foo: foo };
+var obj2 = {};
+
+<span class="next">obj1.foo( 2 );
+console.log( obj1.a ); // 2</span>
+
+<span class="next">obj1.foo.call( obj2, 3 );
+console.log( obj2.a ); // 3</span>
+
+<span class="next">var bar = new obj1.foo( 4 );
+console.log( obj1.a ); // 2
+console.log( bar.a ); // 4</span></code></pre>
+	</section>
+
+
+	<section class="slide" id="ignoreThis">
+		<h2>Игнорирование this</h2>
+
+		<p>Если вы передадите <code class="js">null</code> или <code class="js">undefined</code> как <code class="js">this</code> биндинг в методах <code class="js">call</code> или <code class="js">apply</code>, то данное связывание будет проигнорировано, а вместо explicit binding, будет выполнено правило default binding.</p>
+
+		<pre><code class="js" style="font-size: 14px;">function foo() {
+    console.log( this.a );
+}
+
+var a = 2;
+
+foo.call( null ); // 2</code></pre>
+	</section>
+
+
+	<section class="slide" id="lexicalThis">
+		<h2>Lexical this и стрелочные функции</h2>
+		
+		<p>При использовании стрелочных функций <code class="js">=></code> из ES6, привязка <code class="js">this</code> не подчиняется нашим 4-м правилам.</p>
+		<p>Вместо этого, будет использован <code class="js">this</code> из родительского Lexical Scope</p>
+
+		<pre><code class="js" style="font-size: 14px;"></code></pre>
+	</section>
+
+	<section class="slide" id="lexicalThisSample">
+		<h2>Пример lexical this и стрелочных функций</h2>
+		
+		<pre><code class="js" style="font-size: 14px;">function foo() {
+    return (a) => {		// тоже самое что и `function(a){` за исключением `this`
+        // `this` берется из родительской функции `foo()`
+        console.log( this.a );
+    };
+}
+
+var obj1 = { a: 2 };
+var obj2 = { a: 3 };
+
+var bar = foo.call( obj1 );
+bar.call( obj2 ); // 2, а не 3!</code></pre>
+	</section>
+
+	
+	<section class="slide" id="lexicalThisUsefulSample">
+		<h2>Полезное применение данного приема</h2>
+		
+		<pre><code class="js" style="font-size: 14px;">function foo() {
+    setTimeout(() => { 
+        // `this` берется из родительской функции `foo()`
+        console.log( this.a );
+    },100);
+}
+
+var obj = {
+    a: 2
+};
+
+foo.call( obj ); // 2</code></pre>
+	</section>
+
+
+	<section class="slide" id="objects">
+		<h2>Объекты</h2>
+
+		<p>Для того, чтобы создать объект, можно воспользоваться 2-мя способами:</p>
+		<pre><code class="js" style="font-size: 14px;">var myObj = {  // literal syntax
+    key: value
+    // ...
+};</code></pre>
+
+	<p>или</p>
+
+<pre><code class="js" style="font-size: 14px;">var myObj = new Object();  // constructed
+myObj.key = value;
+</code></pre>
+	</section>
+
+
+	<section class="slide" id="types">
+		<h2>Типы</h2>
+
+		<p>JS содержит 6 основных типов данных:</p>
+		
+		<ul style="width: 40%; display: inline-block; float: left;">
+			<li>string</li>
+			<li>number</li>
+			<li>boolean</li>
+			<li>null</li>
+			<li>undefined</li>
+			<li>object</li>
+		</ul>
+
+		<div style="width: 58%; float: left;">
+			Основные примитивы <code class="js">string</code>, <code class="js">number</code>, <code class="js">boolean</code>, <code class="js">null</code> и <code class="js">undefined</code> не являются объектами.
+			Но <code class="js">typeof null</code> говорит что это объект, на самом деле это не верно.
+		</div>
+	</section>
+
+
+	<section class="slide" id="types2">
+		<h2>Несколько специальных типов</h2>
+
+		<p>Так же мы имеем несколько специальных типов:</p>
+
+		<ul>
+			<li><code class="js">function</code> - это подтип объектов (технически это "callable object")</li>
+			<li>Массивы - тоже пришли от обектов с дополнительными поведениями.<!-- Организация хранения данных в массиве немного по другому структурированна чем в объекте --></li>
+		</ul>
+	</section>
+
+	<section class="slide" id="builtInObjects">
+		<h2>Встроенные объекты</h2>
+
+		<ul style="width: 40%; display: inline-block; float: left; font-size: 22px;">
+			<li>String</li>
+			<li>Number</li>
+			<li>Boolean</li>
+			<li>Object</li>
+			<li>Function</li>
+			<li>Array</li>
+			<li>Date</li>
+			<li>RegExp</li>
+			<li>Error</li>
+		</ul>
+		
+		<div style="width: 58%; float: left;">
+			<p>Но на самом деле это функции, которые можно использовать как конструктор.</p>
+		</div>
+	</section>
+
+
+	<section class="slide" id="builtInObjectsSample">
+		<h2>Пример встроенных объектов</h2>
+
+		<pre><code class="js" style="font-size: 16px;">var strPrimitive = "I am a string";
+typeof strPrimitive;                            // "string"
+strPrimitive instanceof String;                 // false
+
+var strObject = new String( "I am a string" );
+typeof strObject;                               // "object"
+strObject instanceof String;                    // true
+
+<span style="color: red !important;">// !!!!!!!!!!!!!!!!!!!! inspect the object sub-type
+!!!!!!!!!!!!!!!!!!!! Object.prototype.toString.call( strObject );    // [object String]</span></code></pre>
+
+		<p><code class="js">[object String]</code> - означает что это объект создан с помощью конструктора <code class="js">String</code></p>
+	</section>
+
+
+	<section class="slide" id="primitives">
+		<h2>Примитивы</h2>
+
+		<p>Строка <code class="js">"I am a string"</code> не является объектом, это примитив(primitive) и он является неизменяемым(immutable). Для того, чтобы производить действия над ним, необходим объект соответствующего типа, в данном случае <code class="js">String</code></p>
+		<p>К счастью JS автоматически "приводит" <code class="js">"string"</code> примитив к <code class="js">String</code> объекту, во время выполнения операций над ним. </p>
+		<p>Старайтесь чаще использовать литералы чем объекты.</p>
+	</section>
+
+
+	<section class="slide" id="primitivesSample">
+		<h2>Пример</h2>
+
+		<pre><code class="js" style="font-size: 16px;">var strPrimitive = "I am a string";
+
+console.log( strPrimitive.length );         // 13
+
+console.log( strPrimitive.charAt( 3 ) );    // "m"</code></pre>
+	</section>
+
+	<section class="slide" id="overPrimitives">
+		<h2>Другие особенности</h2>
+
+		<p><code class="js">null</code> и <code class="js">undefined</code> не имеют "своих" оъектов</p>
+		<p><code class="js">Date</code> можно создать только при помощи объекта</p>
+		<p>Объекты(<code class="js">Object</code>s), массивы, функции и регулярные выражения(<code class="js">RegExp</code>) являются объектами, независимо от того, как они были созданы <em>(литеральная форма, или через конструктор объекта)</em></p>
+	</section>
+
+	<section class="slide" id="contents">
+		<h2>Содержание</h2>
+
+		<p>Как мы видели ранее, объекты состоят из списка элементов находящихся в них, которые мы называем свойства.</p>
+		<p>Свойства это всего лишь ключь и значение, ключи хранятся непосредственно в объекте и ссылаются на на свои значения</p>
+		<pre><code class="js" style="font-size: 16px;">var myObject = {
+    a: 2
+};
+
+myObject.a;     // 2
+myObject["a"];  // 2</code></pre>
+	</section>
+
+	<section class="slide" id="keysInObjects">
+		<h2>Все ключи в объектах являются строками</h2>
+
+		<p>Каждый ключь в объекте является строкой. Если вы пытаетесь сохранить не строку в ключе, то сначало производится преобразование в строку!</p>
+
+		<pre><code class="js" style="font-size: 16px;">var myObject = { };
+
+myObject[true] = "foo";
+myObject[3] = "bar";
+myObject[myObject] = "baz";
+
+myObject["true"];               // "foo"
+myObject["3"];                  // "bar"
+myObject["[object Object]"];    // "baz"</code></pre>
+	</section>
+
+	<section class="slide" id="computedPropertyNames">
+		<h2>Исчисляемые имена свойств</h2>
+
+		<p>Когда мы пытаемся получить свойство объекта, имя которого нужно вычислить, или оно находится в переменной. Мы используем ситаксис <code class="js">myObject[variable]</code> или <code class="js">myObject[a + b]</code> для доступа к свойству.</p>
+
+		<p>В ES6 появляется функциональность "computed property names", которая позволяет использовать похожий синтаксис при создании объекта</p>
+	</section>
+
+	<section class="slide" id="computedPropertyNamesSample">
+		<h2>Исчисляемые имена свойств</h2>
+
+		<pre><code class="js" style="font-size: 16px;">var prefix = "foo";
+
+var myObject = {
+    [prefix + "bar"]: "hello",
+    [prefix + "baz"]: "world"
+};
+
+myObject["foobar"]; // hello
+myObject["foobaz"]; // world</code></pre>
+	</section>
+
+
+	<section class="slide" id="arrays">
+		<h2>Массивы</h2>
+
+		<p>Как мы уже говорили ранее, массивы это объекты которые имеют дополнительную структуру для хранения индексов.</p>
+		<p>Не стоит использовать <code class="js">arr['v']</code> или <code class="js">arr.v</code> для записи значений в массив, а то можно вместо добавления в массив, создать новое свойство в объекте массива.</p>
+		<pre><code class="js" style="font-size: 16px;">var a = [1, "ew", "2"]
+a["2"] = "wwww";        //	a = [1, "ew", "wwww"]
+a["-8"] = "negative"    //	a = [1, "ew", "wwww"]
+		</code></pre>
+	</section>
+
+
+	<section class="slide" id="duplicatingObjects">
+		<h2>Дублирование объектов</h2>
+
+		<p>Одна из обсуждаемых вещей в JS у начинающих разработчиков, это копирование объектов. Кто-то думает что должна быть встроеная функция <code class="js">copy()</code> или подобная, для копирования объектов.</p>
+		<p>Но для JS подобные методы необходимо реализовывать вручную!</p>
+	</section>
+
+
+	<section class="slide" id="duplicatingObjectsSample">
+		<h2>Дублирование объектов (пример)</h2>
+
+		<pre><code class="js" style="font-size: 14px;">function anotherFunction() { /*..*/ }
+
+var anotherObject = { c: true };
+
+var anotherArray = [];
+
+var myObject = {
+    a: 2,
+    b: anotherObject,   // ссылка, не копия
+    c: anotherArray,    // еще одна ссылка
+    d: anotherFunction
+};
+
+anotherArray.push( anotherObject, myObject );</code></pre>
+	</section>
+
+	<section class="slide" id="es6assign">
+		<h2>Копирование объектов через ES6 Object.assign(..) </h2>
+
+		<p><code class="js">Object.assign(..)</code> первый параметр "приемник", остальные параметры источники. Копирует свойства при помощи <code class="js">=</code></p>
+	
+		<pre class="next"><code class="js" style="font-size: 18px;">var newObj = Object.assign( {}, myObject );
+
+newObj.a;                       // 2
+newObj.b === anotherObject;     // true
+newObj.c === anotherArray;      // true
+newObj.d === anotherFunction;   // true</code></pre>
+	</section>
+
+
+	<section class="slide" id="propertyDescriptors">
+		<h2>Property Descriptors</h2>
+
+		<p>Функциональность позволяющая изменять свойства объектов и их "поведение", например можно сделать чтобы свойство "не было видно" в циклах, или чтобы нельзя было поменять значение.</p>
+	
+		<pre><code class="js" style="font-size: 14px;">var myObject = {};
+
+Object.defineProperty( myObject, "a", {
+    value: 2,
+    writable: true,
+    configurable: true,
+    enumerable: true
+} );
+
+myObject.a; // 2</code></pre>
+	</section>
+
+	<section class="slide" id="propertyDescriptors2">
+		<h2>Property Descriptors</h2>
+
+		<p><strong>writable</strong> - создает "неизменяемое" свойство, в <code class="js">strict mode</code> выдает ошибку.</p>
+		<p><strong>configurable</strong> - означает что мы не сможем изменить свойство через <code class="js">defineProperty(..)</code>, и не сможем удалить данное свойство через оператор <code class="js">delete</code></p>
+		<p><strong>enumerable</strong> - позволяет убрать данное свойство при перечислении в циклах(например <code class="js">for..in</code>)</p>
+	</section>
+
+
+	<section class="slide" id="immutability">
+		<h2>Immutability (неизменяемые свойства)</h2>
+
+		<p>Установив writable:false при помощи property descriptors, мы сделаем неизменяемым только само свойство объекта, но не ссылки хранящиеся в нем</p>
+
+		<pre><code class="js" style="font-size: 14px;">var myObject = {};
+
+Object.defineProperty( myObject, "imun", {
+    value: {},
+    writable: false,
+    configurable: false
+} );
+
+myObject.imun.c = "changed!!"; // добавили новое свойство к объекту</code></pre>
+	</section>
+
+
+	<section class="slide" id="preventExtensions">
+		<h2>Prevent Extensions</h2>
+
+		<p>При использовании <code class="js">Object.preventExtensions(..)</code> к объекту, мы запретим добавление новых свойств в объект.</p>
+
+		<pre><code class="js" style="font-size: 14px;">var myObject = {
+    a: 2
+};
+
+Object.preventExtensions( myObject );
+
+myObject.b = 3;
+myObject.b; // undefined</code></pre>
+
+		<p>В <code class="js">strict mode</code> создание нового свойства выбросит <code class="js">TypeError</code></p>
+	</section>
+
+
+	<section class="slide" id="seal">
+		<h2>Seal - запечатать</h2>
+
+		<p>При использовании <code class="js">Object.seal(..)</code> к объекту, мы совместим 2 прошлых метода</p>
+		<p>Это тоже самое что вызвать <code class="js">Object.preventExtensions(..)</code> на объекте и проставить все свойства в <code class="js">configurable:false</code></p>
+	</section>
+
+	<section class="slide" id="freeze">
+		<h2>Freeze - заморозить</h2>
+
+		<p>Совмещяет в себе <code class="js">Object.seal(..)</code> и <code class="js">writable:false</code></p>
+
+		<p>Данный метод не осуществляет глубокую заморозку(deep freeze), для этого надо вручную рекурсивно пройти по свойствам объектам и применить к ним <code class="js">Object.freeze(..)</code></p>
+	</section>
+
+	<section class="slide" id="objectGet">
+		<h2>[[Get]]</h2>
+
+		<p>Доступ к свойству объекта</p>
+
+		<pre><code class="js" style="font-size: 14px;">var myObject = {
+    a: 2
+};
+
+myObject.a; // 2</code></pre>
+
+		<p>Данный пример выглядет как "взять свойство <code class="js">a</code> у объекта <code class="js">myObject</code>"</p>
+		<p>На самом деле происходит вызов <code class="js">[[Get]]</code> на обекте <code class="js">myObject</code>. Поведение по умолчанию попытается найти свойство <code class="js">a</code> и вернуть значение, иначе вернуть <code class="js">undefined</code></p>
+	</section>
+
+	<section class="slide" id="objectGet2">
+		<h2>[[Get]]</h2>
+
+		<pre><code class="js" style="font-size: 16px;">var myObject = {
+    a: undefined
+};
+
+myObject.a; // undefined
+myObject.b; // undefined</code></pre>
+
+		<p>Хоть <code class="js">a</code> и <code class="js">b</code> возвращает одинаковое значение <code class="js">undefined</code>, внутреннее поведение метода <code class="js">[[Get]]</code> отличается</p>
+	</section>
+
+
+	<section class="slide" id="objectPut">
+		<h2>[[Put]]</h2>
+
+		<pre><code class="js" style="font-size: 16px;"></code></pre>
+
+		<p>Как в случае в <code class="js">[[Get]]</code>, "запись" значения в свойство объекта вызывает аналогичную функцию <code class="js">[[Put]]</code></p>
+
+		<ul>
+			<li>Если существует кастомная функция <code class="js">[[Put]]</code>, то вызвать ее. <em>(познакомимся детельнее позже)</em></li>
+			<li>Если <code class="js">writable:false</code> ничего не делать (выбросить исключение в strict mode)</li>
+			<li>В остальных случаях сохранить значение в свойство по обычным правилам</li>
+		</ul>
+	</section>
+
+	<section class="slide" id="gettersSetters">
+		<h2>Getters & Setters</h2>
+
+		<p>Как мы уже поняли <code class="js">[[Get]]</code> и <code class="js">[[Put]]</code> получают и устанавливают свойства у объекта</p>
+		<p>При помощи продвинутых возможностей языка (ES5) данное поведение можно переопределить!</p>
+		<p>Функции получения и установления свойств задаются для каждого отдельного свойства в объекте.</p>
+	</section>
+
+
+	<section class="slide" id="gettersSetters2">
+		<h2>Getters & Setters</h2>
+
+		<pre><code class="js" style="font-size: 14px;">var myObject = {
+    get a() { return 2; } // определим getter для `a`
+};
+
+Object.defineProperty(
+    myObject,
+    "b",
+    {
+        get: function(){ return this.a * 2 },  // определим getter для `b`
+        enumerable: true
+    }
+);
+
+myObject.a; // 2
+myObject.b; // 4</code></pre>
+	</section>
+
+
+	<section class="slide" id="gettersSetters3">
+		<h2>Getters & Setters</h2>
+
+		<p>В прошлом примере мы создали 2 свойства которые возвращали постоянное значение, но данные свойства не хранят значения.</p>
+	
+		<pre><code class="js" style="font-size: 16px;">var myObject = {
+    get a() { return 2; } // определим getter для `a`
+};
+
+myObject.a = 3;
+myObject.a; // 2</code></pre>
+	</section>
+
+
+	<section class="slide" id="gettersSetters4">
+		<h2>Getters & Setters</h2>
+
+		<p>Для того, чтобы в прошлом примере можно было хранить значения в свойстве <code class="js">a</code>, необходимо создать <code class="js">setter</code></p>
+	
+		<pre><code class="js" style="font-size: 16px;">var myObject = {
+	// определим getter для `a`
+    get a() { return this._a_; },
+
+    // определим setter для `a`
+    set a(val) { this._a_ = val * 2; }
+};
+
+myObject.a = 2;
+myObject.a; // 4</code></pre>
+	</section>
+
+
+	<section class="slide" id="existence">
+		<h2>Existence</h2>
+
+		<p>Как мы узнали раньше, можно получить <code class="js">undefined</code> если свойство не существует или свойство хранит в себе <code class="js">undefined</code></p>
+		<p>Как узнать о существовании свойства?</p>
+		<pre><code class="js" style="font-size: 16px;">var myObject = { a: 2 };
+
+("a" in myObject);              // true
+("b" in myObject);              // false
+
+myObject.hasOwnProperty( "a" ); // true
+myObject.hasOwnProperty( "b" ); // false</code></pre>
+	</section>
+
+
+	<section class="slide" id="existence2">
+		<h2>Existence (различия)</h2>
+
+		<p><code class="js">"a" in myObject</code> - проверяет всю цепочку прототипов <em>(рассмотрим далее)</em></p>
+		<p><code class="js">myObject.hasOwnProperty( "a" )</code> - проверяет наличие свойства только в объекте, без прототипов!</p>
+	</section>
+
+
+	<section class="slide" id="existenceArrays">
+		<h2>Existence применительно к массивом</h2>
+
+		<p>Но применительно к массивам данные инструкции работают не так как могут ожидать начинающие разработчики</p>
+		<p><code class="js">4 in [2, 4, 6] // false</code> - он пытается найти элемент с именем свойства `4` (индексом для массивов 4)</p>
+		<p><code class="js">1 in [2, 4, 6] // true</code> - элемент с индексом `1` найден в массиве</p>
+	</section>
+
+
+	<section class="slide" id="enumeration">
+		<h2>Enumeration (перечисление)</h2>
+
+		<pre><code class="js" style="font-size: 12px;">var myObject = { };
+
+Object.defineProperty( myObject, "a",
+    { enumerable: true, value: 2 } // делаем свойство перечисляемым
+);
+
+Object.defineProperty( myObject, "b",
+    { enumerable: false, value: 3 } // а это не перечисляемое свойство
+);
+
+myObject.b; // 3
+("b" in myObject); // true
+myObject.hasOwnProperty( "b" ); // true
+
+for (var k in myObject) {
+    console.log( k, myObject[k] );
+}
+// "a" 2
+</code></pre>
+	</section>
+
+
+	<section class="slide" id="forInArrays">
+		<h2>Цикл for..in по массиву</h2>
+
+		<p>Цикл <code class="js">for..in</code> по массивам может работать не так как хотелось бы! <code class="js">for..in</code> проходит по всем перечисляемым свойствам, а так-как массив может содержать кастомные перечисляемые свойства, то цикл пройдет и по ним!</p>
+		<pre><code class="js" style="font-size: 16px;">var a = [1,2,3]
+a.custom = function(){ console.log('haha') }
+
+for(e in a) {
+	console.log(e)
+}
+// 0, 1, 2, custom</code></pre>
+	</section>
+
+	<section class="slide" id="enumerationCheck">
+		<h2>Проверка на enumeration</h2>
+
+		<pre><code class="js" style="font-size: 16px;">myObject.propertyIsEnumerable( "a" ); // true
+myObject.propertyIsEnumerable( "b" ); // false
+
+Object.keys( myObject ); // ["a"]  -  вернуть все перечисляемые свойства
+Object.getOwnPropertyNames( myObject ); // ["a", "b"]  -  вернуть все свойства</code></pre>
+	</section>
+
+
+	<section class="slide" id="iteration">
+		<h2>Итерация по массиву</h2>
+
+		<pre><code class="js" style="font-size: 16px;">var myArray = [1, 2, 3];
+
+for (var i = 0; i < myArray.length; i++) {
+    console.log( myArray[i] );
+}
+// 1 2 3</code></pre>
+	</section>
+	
+
+	<section class="slide" id="thanksForWatching">
 		<h2 style="text-align: center; margin-top: 150px;">Спасибо за внимание ;)</h2>
 	</section>
 
