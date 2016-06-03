@@ -1194,6 +1194,8 @@ Object.getOwnPropertyNames( myObject ); // ["a", "b"]  -  вернуть все 
 	<section class="slide" id="iteration">
 		<h2>Итерация по массиву</h2>
 
+		<p>Самый стандартный и всем знакомый способ перебора массива</p>
+
 		<pre><code class="js" style="font-size: 16px;">var myArray = [1, 2, 3];
 
 for (var i = 0; i < myArray.length; i++) {
@@ -1201,7 +1203,158 @@ for (var i = 0; i < myArray.length; i++) {
 }
 // 1 2 3</code></pre>
 	</section>
+
+
+	<section class="slide" id="forEachEverySomeMap">
+		<h2>forEach() every() some() map()</h2>
+
+		<p>В ES5 определили новые функции перебора елементов массива</p>
+		
+		<div style="font-size: 19px;">
+			<p><code class="js">forEach(fn, this)</code> - перебирает все элементы массива выполнив для каждого функцию <code class="js">fn</code></p>
+			<p><code class="js">every(fn, this)</code> - возвращает <code class="js">true</code> если все вызовы функции <code class="js">fn</code> вернули <code class="js">true</code>, иначе вернет <code class="js">false</code></p>
+			<p><code class="js">some(fn, this)</code> - возвращает <code class="js">true</code> если хотябы один из вызовов <code class="js">fn</code> вернул <code class="js">true</code>, иначе вернет <code class="js">false</code></p>
+			<p><code class="js">map(fn, this)</code> - возвращает новый массив основанный на том, что будут возвращать вызовы <code class="js">fn</code></p>
+		</div>
+	</section>
+
+	<section class="slide" id="everyAndSome">
+		<h2>Пример every() и some()</h2>
+
+		<pre><code class="js" style="font-size: 18px;">var arr = [1, -1, 2, -2, 3];
+
+function isPositive(number) {
+  return number > 0;
+}
+
+console.log( arr.every(isPositive) ); // false, не все положительные
+console.log( arr.some(isPositive) ); // true, есть хоть одно положительное</code></pre>
+	</section>
+
+	<section class="slide" id="forOf">
+		<h2>for..of перебор по значениям</h2>
+
+		<pre><code class="js" style="font-size: 16px;">var myArray = [ 1, 2, 3 ];
+
+for (var v of myArray) {
+    console.log( v );
+}
+// 1
+// 2
+// 3</code></pre>
+
+		<p>Использует итератор для перебора перебора по элементам</p>
+		<p>Массивы имеют встроеный итератор, чтобы пройтись по элементам кастомного объекта, надо создать свой итератор</p>
+	</section>
+
+	<section class="slide" id="iterator">
+		<h2>iterator</h2>
+
+		<p>Перебирем наш массив при помощи итератора</p>
+
+		<pre><code class="js" style="font-size: 16px;">var myArray = [ 1, 2, 3 ];
+var it = myArray[Symbol.iterator]();
+
+it.next(); // { value:1, done:false }
+it.next(); // { value:2, done:false }
+it.next(); // { value:3, done:false }
+it.next(); // { done:true }</code></pre>
+
+		<p><code class="js">myArray[Symbol.iterator]();</code> - возвращает объект итератор для нашего массива</p>
+	</section>
+
+
+	<section class="slide" id="customIterator">
+		<h2>Создаем свой iterator</h2>
+
+		<pre><code class="js" style="font-size: 12px;">Object.defineProperty( myObject, Symbol.iterator, {
+    enumerable: false,
+    writable: false,
+    configurable: true,
+    value: function() {
+        var obj = this;
+        var idx = 0;
+        var ks = Object.keys( obj );
+        return {
+            next: function() {
+                return {
+                    value: obj[ks[idx++]],
+                    done: (idx > ks.length)
+                };
+            }
+        };
+    }
+});</code></pre>
+	</section>
+
+	<section class="slide" id="useCustomIterator">
+		<h2>Используем свой iterator</h2>
+
+		<pre><code class="js" style="font-size: 12px;">var myObject = {
+    a: 2,
+    b: 3
+};
+
+// руками перебираем `myObject`
+var it = myObject[Symbol.iterator]();
+it.next(); // { value:2, done:false }
+it.next(); // { value:3, done:false }
+it.next(); // { value:undefined, done:true }
+
+// перебираем при помощи `for..of`
+for (var v of myObject) {
+    console.log( v );
+}
+// 2
+// 3</code></pre>
+	</section>
 	
+
+	<section class="slide" id="customIteratorAlternative">
+		<h2>Создаем свой iterator (другой метод)</h2>
+
+		<pre><code class="js" style="font-size: 16px;">var myObject = { 
+	a:2, 
+	b:3, 
+	[Symbol.iterator]: function(){ /* .. */ } 
+}</code></pre>
+	</section>
+
+
+	<section class="slide" id="infiniteIterator">
+		<h2>Бесконечный итератор</h2>
+
+		<pre><code class="js" style="font-size: 14px;">var randoms = {
+    [Symbol.iterator]: function() {
+        return {
+            next: function() {
+                return { value: Math.random() };
+            }
+        };
+    }
+};
+
+var randoms_pool = [];
+for (var n of randoms) {
+    randoms_pool.push( n );
+    if (randoms_pool.length === 100) break;
+}</code></pre>
+	</section>
+
+
+	<section class="slide" id="difficultCustomIterator">
+		<h2>Сложные итераторы</h2>
+
+		<p>Вместо оыбчного перебора элементов, можно создать итераторы со "сложной" логикой:</p>
+
+		<ul>
+			<li>Плоскость с фигурами - перебор всех элементов на плоскости которые находятся в определенной окружности</li>
+			<li>Список товаров - перебор всех товаров по определенному условию</li>
+		</ul>
+	</section>
+
+
+
 
 	<section class="slide" id="thanksForWatching">
 		<h2 style="text-align: center; margin-top: 150px;">Спасибо за внимание ;)</h2>
