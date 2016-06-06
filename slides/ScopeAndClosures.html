@@ -72,7 +72,7 @@
 	<section class="slide" id="compiler">
 		<h2>Compiler</h2>
 		<ul>
-			<li>Разбирает исходник на токены</li>
+			<li>Разбирает исходный код</li>
 			<li>Заполняет Scope переменными</li>
 			<li>Компилирует код в байткод (машинный код V8)</li>
 		</ul>
@@ -166,7 +166,7 @@ var c = foo( 2 );</code>
 		</pre>
 		</div>
 
-		<div style="display: inline-block; width: 49%;">
+		<div class="next" style="display: inline-block; width: 49%;">
 		<p>Для движка</p>
 		<pre><code class="js">foo(a) {
     b = a;
@@ -504,7 +504,7 @@ console.log( a ); // 2</code></pre>
         console.log( a + i );
     }
 
-    for (var i=0; i < 10; i++) { // бесконечный цикл
+    for (var i = 0; i < 10; i++) { // бесконечный цикл
         bar( i * 2 );
     }
 })();
@@ -519,7 +519,7 @@ console.log( a ); // 2</code></pre>
         console.log( a + i );
     }
 
-    for (var i=0; i < 10; i++) { // теперь все нормально
+    for (var i = 0; i < 10; i++) { // теперь все нормально
         bar( i * 2 );
     }
 })();
@@ -592,7 +592,7 @@ console.log( bar ); // ReferenceError</code></pre>
 }
 console.log( bar ); // ReferenceError</code></pre>
 		
-		<p>Работает не во всех окружениях, может выбросить исключение (<i>Uncaught SyntaxError: Unexpected identifier</i>)</p>
+		<!-- <p>Работает не во всех окружениях, может выбросить исключение (<i>Uncaught SyntaxError: Unexpected identifier</i>)</p> -->
 	</section>
 
 
