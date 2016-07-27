@@ -36,8 +36,8 @@
 	
 	<section class="slide" id="thisInto">
 		<h2>this</h2>
-		<p><code class="js">this</code> - один из наиболее запутанных механизмов в JS и сбивает с толку множество программистов</p>
-		<p><code class="js">this</code> это специальное ключевое слово которое определяется при каждом вызове функции</p>
+		<p><code class="js">this</code> - один из наиболее запутанных механизмов в JS и сбивает с толку множество начинающих программистов</p>
+		<p><code class="js">this</code> - специальное ключевое слово которое автоматически определяется внутри пространства имен функции при каждом вызове функции</p>
 	</section>
 
 
@@ -52,14 +52,14 @@ function speak() {
     console.log( greeting );
 }
 
-var me = { name: "Kyle" };
-var you = { name: "Reader" };
+<span class="next">var me = { name: "Kyle" };
+var you = { name: "Reader" };</span>
 
-identify.call( me ); // KYLE
+<span class="next">identify.call( me ); // KYLE
 identify.call( you ); // READER
 
 speak.call( me ); // Hello, I'm KYLE
-speak.call( you ); // Hello, I'm READER</code></pre>
+speak.call( you ); // Hello, I'm READER</span></code></pre>
 	</section>
 
 
@@ -117,7 +117,7 @@ foo(12);</pre>
 	this(y) // -- рекурсивный вызов (так не работает)
 }</code></pre>
 
-<pre><code class="js" style="font-size: 12px;">let example = document.getElementById("example");
+<pre class="next"><code class="js" style="font-size: 12px;">let example = document.getElementById("example");
 example.addEventListener("click", function(x){
 	doSomething(x);
 	example.removeEventListener("click", this); // -- unbind функции (так не работает)
@@ -126,7 +126,7 @@ example.addEventListener("click", function(x){
 
 	<section class="slide" id="thisWrong4">
 		<h2>Ошибочные концепции связанные с this</h2>
-		<p>Если бы <code class="js">this</code> указывала на функцию, то мы бы смогли хранить в ней необходимые значения. Т.к. функции являются объектом и мы можем добавлять новые поля.</p>
+		<p>Если бы <code class="js">this</code> указывала на функцию, то мы бы смогли хранить в ней необходимые значения. Т.к. функции являются объектами и мы можем добавлять к ним новые поля.</p>
 
 		<pre style="float: left; width: 50%;"><code class="js" style="font-size: 12px;">function foo(num) {
     console.log( "foo: " + num );
@@ -136,7 +136,7 @@ foo.count = 0;
 
 for (var i = 0; i < 10; i++) {
     if (i > 5) {
-        foo( i );
+        foo( i );    // функция вызвалась 4 раза
     }
 }</code></pre>
 
@@ -156,7 +156,7 @@ for (var i = 0; i < 10; i++) {
 
 		<p>Если мы не меняли переменную <code class="js">foo.count</code> то что же тогда изменялось?</p>
 
-		<p>На самом деле появилась новая глобальная переменная <code class="js">count</code> которая имеет значение <code class="js">NaN</code></p>
+		<p>Появилась новая глобальная переменная <code class="js">count</code> <em>(на самом деле новое свойство объекта <code class="js">window.count</code>)</em> которая имеет значение <code class="js">NaN</code></p>
 
 		<p>Как это произошло и почему, мы узнаем немного дальше</p>
 	</section>
