@@ -20,6 +20,16 @@
 		ga('send', 'pageview');
 	</script>
 
+	<script type="text/javascript">
+		$(function(){
+			$('main article .content > a').on('click', function(event){
+				var a = $(event.currentTarget);
+				var vtag = a.data('vtag');
+				ga('send', 'event', 'lecture', 'go', vtag);
+			});
+		});
+	</script>
+
 </head>
 <body>
 	<header>
@@ -99,7 +109,7 @@
 			<div class="content">
 				<h2>Scope and Closures</h2>
 				<p class="desc">Данный урок сожержит в себе описание работы scope (пространства имен) и closures (замыканий), а так же связанные с ними методики разработки, проблемы и их решения.</p>
-				<a href="https://youtu.be/uI-hjpmNeYI" target="_blank" title="Scope and Closures"><button class="status ready">смотреть</button></a>
+				<a href="https://youtu.be/uI-hjpmNeYI" data-vtag="sac" target="_blank" title="Scope and Closures"><button class="status ready">смотреть</button></a>
 			</div>
 		</article>
 
@@ -108,7 +118,9 @@
 			<div class="content">
 				<h2>this & Object Prototypes</h2>
 				<p class="desc">Данный урок содержит описание работы ключевого слова <em>this</em>, где его применяеть и откуда оно берется. Также рассматриваются объекты и прототипное наследование, а так же как его применять в приложении.</p>
-				<button class="status progress">в переводе</button>
+				<a href="https://youtu.be/3btM1eujf9s?list=PLX2w39aiY5NJFkTMw0XaJ5yW_95lkjVNP" data-vtag="taop1" target="_blank" title="this - контекст исполнения функции"><button class="status ready">часть <span class="n">1</span></button></a>
+				<a href="https://youtu.be/xltVJZbTl4Y?list=PLX2w39aiY5NJFkTMw0XaJ5yW_95lkjVNP" data-vtag="taop2" target="_blank" title="Объекты"><button class="status ready">часть <span class="n">2</span></button></a>
+				<button class="status progress">часть <span class="n">3</span> в переводе</button>
 			</div>
 		</article>
 

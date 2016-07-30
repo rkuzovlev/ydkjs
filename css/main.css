@@ -364,6 +364,7 @@ main article .content .desc {
 }
 
 main article .content .status {
+	margin-right: 10px;
     margin-top: 30px;
     font-variant: small-caps;
     font-size: 20px;
@@ -392,6 +393,10 @@ main article .content .status.progress {
 main article .content .status.planned {
 	color: #a1a1a1;
 	border-color: #a1a1a1;
+}
+
+main article .content .status span.n {
+	font-size: 15px;
 }
 
 @media (max-width: 600px) {
