@@ -263,6 +263,7 @@ baz(); // call-site для `baz`</code></pre>
 			<li>Default Binding - связывание по умолчанию</li>
 			<li>Implicit Binding - скрытое связывание</li>
 			<li>Explicit Binding - явное связывание</li>
+			<li><code class="js">new</code> Binding - связывание при создании объекта</li>
 		</ol>
 	</section>
 
@@ -284,7 +285,7 @@ foo(); <span class="next">// 2</span></code></pre>
 		<h2>Default Binding - связывание по умолчанию</h2>
 		<p>В нашем примере функция <code class="js">foo</code> вызвана самым обычным способом <code class="js">foo();</code>, поэтому <code class="js">this</code> в нутри ее будет являться ссылкой на глобальный объект.</p>
 		<p>Это относиться ко всем функциям вызваным подобным образом, в не зависимости от того, в каком Lexical Scope они определены.</p>
-		<p><strong>Важно только то, как мы вызываем функцию (call-site), и ничего другого!!</strong></p>
+		<p class="next"><strong>Важно только то, как мы вызываем функцию (call-site), и ничего другого!!</strong></p>
 	</section>
 	
 	<section class="slide" id="defaultBindingStrictMode">
@@ -301,7 +302,7 @@ foo(); <span class="next">// 2</span></code></pre>
 
 var a = 2;
 
-foo(); // TypeError: `this` is `undefined`</code></pre>
+foo(); <span class="next">// TypeError: Cannot read property 'a' of undefined</span></code></pre>
 	</section>
 
 	<section class="slide" id="defaultBindingStrictMode2">
@@ -317,7 +318,7 @@ function foo() {
 
 var a = 2;
 
-foo(); // TypeError: `this` is `undefined`</code></pre>
+foo(); // TypeError: Cannot read property 'a' of undefined</code></pre>
 	</section>
 
 	<section class="slide" id="defaultBindingStrictMode3">
@@ -352,7 +353,7 @@ var obj = {
     foo: foo
 };
 
-obj.foo(); // 2</code></pre>
+<span class="next">obj.foo(); <span class="next">// 2</span></span></code></pre>
 
 		<ul class="next">
 			<li><code class="js">foo</code> определена вне объекта</li>
@@ -378,7 +379,7 @@ var obj1 = {
     obj2: obj2
 };
 
-obj1.<strong style="font-size: 16px;">obj2.foo();</strong> // 42  важен только последний объект obj2</code></pre>
+obj1.<strong style="font-size: 16px;">obj2.foo();</strong> <span class="next">// 42  важен только последний объект obj2</span></code></pre>
 
 		<p>При вложенности объектов один в другой, берется контекст последнего объекта!</p>
 	</section>
@@ -397,9 +398,9 @@ var obj = {
 };
 
 var bar = obj.foo; // создаем псевдоним(alias) на функцию
-var a = "oops, global"; // `a` является гловальной переменной
+<span class="next">var a = "oops, global"; // `a` является гловальной переменной</span>
 
-bar(); // выведет "oops, global"
+<span class="next">bar(); // выведет "oops, global"</span>
 </code></pre>
 
 		<p>Хоть мы и "привязали" функцию к объекту, позже создали новую ссылку <code class="js">bar</code> на функцию <code class="js">foo</code></p>
@@ -468,13 +469,14 @@ foo( obj ); // global</span></code></pre>
 	</section>
 
 
+<!--
 	<section class="slide" id="explicitBindingPassSimple">
 		<h2>Explicit Binding с примитивами</h2>
 		
 		<p>Вместо объекта, функциям <code class="js">call</code> и <code class="js">apply</code> можно передать примитив <code class="js">string</code>, <code class="js">boolean</code>, <code class="js">number</code></p>
 		<p>При этом, все примитивы оборачиваются в их формы объекты <code class="js">new String(..)</code>, <code class="js">new Boolean(..)</code>, <code class="js">new Number(..)</code></p>
 	</section>
-
+-->
 
 	<section class="slide" id="hardBinding">
 		<h2>Hard Binding</h2>
@@ -581,7 +583,7 @@ console.log( b ); // 5</span></code></pre>
 		<p>Когда вызывается конструктор, следующие действия выполняются автоматически.</p>
 		<ul>
 			<li>"На лету" создается новый объект.</li>
-			<li>Новый объект связывается через прототип с функцией.</li>
+			<li>Прототип функции конструктора также становится прототипом нового объекта.</li>
 			<li>Этот-же объект становится <code class="js">this</code> для вызова данного конструктора.</li>
 			<li>Функция вызванная с оператором <code class="js">new</code> автоматически вернет вновь созданый объект в конце исполнения.</li>
 		</ul>
@@ -631,8 +633,8 @@ obj2.foo.call( obj1 ); // 2</code></pre>
 	<section class="slide" id="multipleRules3">
 		<h2>Все вместе</h2>
 
-		<pre><code class="js" style="font-size: 14px;">function foo(something) {
-    this.a = something;
+		<pre><code class="js" style="font-size: 14px;">function foo(a) {
+    this.a = a;
 }
 var obj1 = { foo: foo };
 var obj2 = {};
@@ -677,7 +679,7 @@ foo.call( null ); // 2</code></pre>
 		<h2>Пример lexical this и стрелочных функций</h2>
 		
 		<pre><code class="js" style="font-size: 14px;">function foo() {
-    return (a) => {		// тоже самое что и `function(a){` за исключением `this`
+    return () => {		// тоже самое что и `function(){` за исключением `this`
         // `this` берется из родительской функции `foo()`
         console.log( this.a );
     };
@@ -686,8 +688,8 @@ foo.call( null ); // 2</code></pre>
 var obj1 = { a: 2 };
 var obj2 = { a: 3 };
 
-var bar = foo.call( obj1 );
-bar.call( obj2 ); // 2, а не 3!</code></pre>
+<span class="next">var bar = foo.call( obj1 );</span>
+<span class="next">bar.call( obj2 ); // 2, а не 3!</span></code></pre>
 	</section>
 
 	
@@ -706,6 +708,11 @@ var obj = {
 };
 
 foo.call( obj ); // 2</code></pre>
+	</section>
+
+
+	<section class="slide" id="objectsIntro">
+		<h2 style="text-align: center; margin-top: 150px; font-size: 80px;">Объекты</h2>
 	</section>
 
 
@@ -754,7 +761,7 @@ myObj.key = value;
 
 		<ul>
 			<li><code class="js">function</code> - это подтип объектов (технически это "callable object")</li>
-			<li>Массивы - тоже пришли от обектов с дополнительными поведениями.<!-- Организация хранения данных в массиве немного по другому структурированна чем в объекте --></li>
+			<li>Массивы - тоже пришли от объектов но наделены дополнительными поведениями.<!-- Организация хранения данных в массиве немного по другому структурированна чем в объекте --></li>
 		</ul>
 	</section>
 
@@ -786,14 +793,14 @@ myObj.key = value;
 typeof strPrimitive;                            // "string"
 strPrimitive instanceof String;                 // false
 
-var strObject = new String( "I am a string" );
+<span class="next">var strObject = new String( "I am a string" );
 typeof strObject;                               // "object"
-strObject instanceof String;                    // true
+strObject instanceof String;                    // true</span>
 
-<span style="color: red !important;">// !!!!!!!!!!!!!!!!!!!! inspect the object sub-type
-!!!!!!!!!!!!!!!!!!!! Object.prototype.toString.call( strObject );    // [object String]</span></code></pre>
+<span class="next">//  inspect the object sub-type
+Object.prototype.toString.call( strObject );    // [object String]</span></code></pre>
 
-		<p><code class="js">[object String]</code> - означает что это объект создан с помощью конструктора <code class="js">String</code></p>
+		<p class="next"><code class="js">[object String]</code> - означает что это объект создан с помощью конструктора <code class="js">String</code></p>
 	</section>
 
 
@@ -802,7 +809,7 @@ strObject instanceof String;                    // true
 
 		<p>Строка <code class="js">"I am a string"</code> не является объектом, это примитив(primitive) и он является неизменяемым(immutable). Для того, чтобы производить действия над ним, необходим объект соответствующего типа, в данном случае <code class="js">String</code></p>
 		<p>К счастью JS автоматически "приводит" <code class="js">"string"</code> примитив к <code class="js">String</code> объекту, во время выполнения операций над ним. </p>
-		<p>Старайтесь чаще использовать литералы чем объекты.</p>
+		<p class="next">Старайтесь чаще использовать литералы (<code class="js">"I am a string"</code>) чем объекты (<code class="js">new String("I am a string")</code>).</p>
 	</section>
 
 
@@ -819,16 +826,16 @@ console.log( strPrimitive.charAt( 3 ) );    // "m"</code></pre>
 	<section class="slide" id="overPrimitives">
 		<h2>Другие особенности</h2>
 
-		<p><code class="js">null</code> и <code class="js">undefined</code> не имеют "своих" оъектов</p>
-		<p><code class="js">Date</code> можно создать только при помощи объекта</p>
-		<p>Объекты(<code class="js">Object</code>s), массивы, функции и регулярные выражения(<code class="js">RegExp</code>) являются объектами, независимо от того, как они были созданы <em>(литеральная форма, или через конструктор объекта)</em></p>
+		<p class=""><code class="js">null</code> и <code class="js">undefined</code> не имеют "своих" оъектов</p>
+		<p class="next"><code class="js">Date</code> можно создать только при помощи объекта</p>
+		<p class="next">Объекты(<code class="js">Object</code>s), массивы, функции и регулярные выражения(<code class="js">RegExp</code>) являются объектами, независимо от того, как они были созданы <em>(литеральная форма, или через конструктор объекта)</em></p>
 	</section>
 
 	<section class="slide" id="contents">
-		<h2>Содержание</h2>
+		<h2>Хранение свойств</h2>
 
-		<p>Как мы видели ранее, объекты состоят из списка элементов находящихся в них, которые мы называем свойства.</p>
-		<p>Свойства это всего лишь ключь и значение, ключи хранятся непосредственно в объекте и ссылаются на на свои значения</p>
+		<p>Как мы видели раньше, объекты состоят из списка элементов находящихся в них, которые мы называем свойства.</p>
+		<p>Свойства это всего лишь ключь и значение, ключи хранятся непосредственно в объекте и ссылаются на свои значения</p>
 		<pre><code class="js" style="font-size: 16px;">var myObject = {
     a: 2
 };
@@ -840,7 +847,7 @@ myObject["a"];  // 2</code></pre>
 	<section class="slide" id="keysInObjects">
 		<h2>Все ключи в объектах являются строками</h2>
 
-		<p>Каждый ключь в объекте является строкой. Если вы пытаетесь сохранить не строку в ключе, то сначало производится преобразование в строку!</p>
+		<p>Каждый ключь в объекте является строкой. Если вы пытаетесь использовать в ключе не строку, то сначало производится преобразование!</p>
 
 		<pre><code class="js" style="font-size: 16px;">var myObject = { };
 
@@ -848,9 +855,9 @@ myObject[true] = "foo";
 myObject[3] = "bar";
 myObject[myObject] = "baz";
 
-myObject["true"];               // "foo"
+<span class="next">myObject["true"];               // "foo"
 myObject["3"];                  // "bar"
-myObject["[object Object]"];    // "baz"</code></pre>
+myObject["[object Object]"];    // "baz"</span></code></pre>
 	</section>
 
 	<section class="slide" id="computedPropertyNames">
@@ -889,7 +896,7 @@ a["-8"] = "negative"    //	a = [1, "ew", "wwww"]
 
 
 	<section class="slide" id="duplicatingObjects">
-		<h2>Дублирование объектов</h2>
+		<h2>Копирование объектов</h2>
 
 		<p>Одна из обсуждаемых вещей в JS у начинающих разработчиков, это копирование объектов. Кто-то думает что должна быть встроеная функция <code class="js">copy()</code> или подобная, для копирования объектов.</p>
 		<p>Но для JS подобные методы необходимо реализовывать вручную!</p>
@@ -897,7 +904,7 @@ a["-8"] = "negative"    //	a = [1, "ew", "wwww"]
 
 
 	<section class="slide" id="duplicatingObjectsSample">
-		<h2>Дублирование объектов (пример)</h2>
+		<h2>Копирование объектов (пример)</h2>
 
 		<pre><code class="js" style="font-size: 14px;">function anotherFunction() { /*..*/ }
 
@@ -905,20 +912,20 @@ var anotherObject = { c: true };
 
 var anotherArray = [];
 
-var myObject = {
+<span class="next">var myObject = {
     a: 2,
     b: anotherObject,   // ссылка, не копия
     c: anotherArray,    // еще одна ссылка
-    d: anotherFunction
-};
+    d: anotherFunction  // и еще одна
+};</span>
 
-anotherArray.push( anotherObject, myObject );</code></pre>
+<span class="next">anotherArray.push( anotherObject, myObject );</span></code></pre>
 	</section>
 
 	<section class="slide" id="es6assign">
 		<h2>Копирование объектов через ES6 Object.assign(..) </h2>
 
-		<p><code class="js">Object.assign(..)</code> первый параметр "приемник", остальные параметры источники. Копирует свойства при помощи <code class="js">=</code></p>
+		<p><code class="js">Object.assign(..)</code> первый параметр "приемник", остальные параметры источники. Копирует свойства при помощи <code class="js">=</code> (присвоения)</p>
 	
 		<pre class="next"><code class="js" style="font-size: 18px;">var newObj = Object.assign( {}, myObject );
 
@@ -949,7 +956,7 @@ myObject.a; // 2</code></pre>
 	<section class="slide" id="propertyDescriptors2">
 		<h2>Property Descriptors</h2>
 
-		<p><strong>writable</strong> - создает "неизменяемое" свойство, в <code class="js">strict mode</code> выдает ошибку.</p>
+		<p><strong>writable</strong> - создает "неизменяемое" свойство, в <code class="js">strict mode</code> выдает ошибку при изменении.</p>
 		<p><strong>configurable</strong> - означает что мы не сможем изменить свойство через <code class="js">defineProperty(..)</code>, и не сможем удалить данное свойство через оператор <code class="js">delete</code></p>
 		<p><strong>enumerable</strong> - позволяет убрать данное свойство при перечислении в циклах(например <code class="js">for..in</code>)</p>
 	</section>
@@ -1016,8 +1023,8 @@ myObject.b; // undefined</code></pre>
 
 myObject.a; // 2</code></pre>
 
-		<p>Данный пример выглядет как "взять свойство <code class="js">a</code> у объекта <code class="js">myObject</code>"</p>
-		<p>На самом деле происходит вызов <code class="js">[[Get]]</code> на обекте <code class="js">myObject</code>. Поведение по умолчанию попытается найти свойство <code class="js">a</code> и вернуть значение, иначе вернуть <code class="js">undefined</code></p>
+		<p class="next">Данный пример выглядет как "взять свойство <code class="js">a</code> у объекта <code class="js">myObject</code>"</p>
+		<p class="next">На самом деле происходит вызов <code class="js">[[Get]]</code> на обекте <code class="js">myObject</code>. Поведение по умолчанию попытается найти свойство <code class="js">a</code> и вернуть значение, иначе вернуть <code class="js">undefined</code></p>
 	</section>
 
 	<section class="slide" id="objectGet2">
@@ -1039,7 +1046,7 @@ myObject.b; // undefined</code></pre>
 
 		<pre><code class="js" style="font-size: 16px;"></code></pre>
 
-		<p>Как в случае в <code class="js">[[Get]]</code>, "запись" значения в свойство объекта вызывает аналогичную функцию <code class="js">[[Put]]</code></p>
+		<p>Как в случае с <code class="js">[[Get]]</code>, "запись" значения в свойство объекта вызывает аналогичную функцию <code class="js">[[Put]]</code></p>
 
 		<ul>
 			<li>Если существует кастомная функция <code class="js">[[Put]]</code>, то вызвать ее. <em>(познакомимся детельнее позже)</em></li>
@@ -1064,17 +1071,17 @@ myObject.b; // undefined</code></pre>
     get a() { return 2; } // определим getter для `a`
 };
 
-Object.defineProperty(
+<span class="next">Object.defineProperty(
     myObject,
     "b",
     {
         get: function(){ return this.a * 2 },  // определим getter для `b`
         enumerable: true
     }
-);
+);</span>
 
-myObject.a; // 2
-myObject.b; // 4</code></pre>
+<span class="next">myObject.a; // 2
+myObject.b; // 4</span></code></pre>
 	</section>
 
 
@@ -1155,15 +1162,14 @@ Object.defineProperty( myObject, "b",
     { enumerable: false, value: 3 } // а это не перечисляемое свойство
 );
 
-myObject.b; // 3
+<span class="next">myObject.b; // 3
 ("b" in myObject); // true
-myObject.hasOwnProperty( "b" ); // true
+myObject.hasOwnProperty( "b" ); // true</span>
 
-for (var k in myObject) {
+<span class="next">for (var k in myObject) {
     console.log( k, myObject[k] );
 }
-// "a" 2
-</code></pre>
+// "a" 2</span></code></pre>
 	</section>
 
 
@@ -1218,6 +1224,32 @@ for (var i = 0; i < myArray.length; i++) {
 		</div>
 	</section>
 
+	<section class="slide" id="forEachAndMap">
+		<h2>Пример forEach() и map()</h2>
+
+		<pre><code class="js" style="font-size: 18px;">var arr = [1, 2, 3, 4, 5];
+
+arr.forEach(function(val, i){
+	console.log(i, "=", val);
+});
+
+var twice = arr.map(function(val, i){
+	return val * 2;
+});
+
+console.log( twice ); // [2, 4, 6, 8, 10]</code></pre>
+	</section>
+
+	<section class="slide" id="forEachAndMapArrayFunction">
+		<h2>Пример map() и стрелочные функции</h2>
+
+		<pre><code class="js" style="font-size: 18px;">var arr = [1, 2, 3, 4, 5];
+
+var twice = arr.map(val => val * 2 );
+
+console.log( twice ); // [2, 4, 6, 8, 10]</code></pre>
+	</section>
+
 	<section class="slide" id="everyAndSome">
 		<h2>Пример every() и some()</h2>
 
@@ -1243,7 +1275,7 @@ for (var v of myArray) {
 // 2
 // 3</code></pre>
 
-		<p>Использует итератор для перебора перебора по элементам</p>
+		<p>Использует итератор для перебора по элементам</p>
 		<p>Массивы имеют встроеный итератор, чтобы пройтись по элементам кастомного объекта, надо создать свой итератор</p>
 	</section>
 
@@ -1295,6 +1327,8 @@ it.next(); // { done:true }</code></pre>
     b: 3
 };
 
+Object.defineProperty( myObject, Symbol.iterator, ..... );
+
 // руками перебираем `myObject`
 var it = myObject[Symbol.iterator]();
 it.next(); // { value:2, done:false }
@@ -1303,10 +1337,8 @@ it.next(); // { value:undefined, done:true }
 
 // перебираем при помощи `for..of`
 for (var v of myObject) {
-    console.log( v );
-}
-// 2
-// 3</code></pre>
+    console.log( v ); // 2, 3
+}</code></pre>
 	</section>
 	
 
