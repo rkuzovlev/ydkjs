@@ -232,42 +232,6 @@ header .desc .books a img {
 	}
 }
 
-.donate {
-	background-color: #eaeaea;
-	text-align: center;
-}
-
-.donate > p {
-    display: inline-block;
-    max-width: 600px;
-    font-size: 22px;
-    line-height: 30px;
-    margin-top: 50px;
-    margin-right: 20px;
-}
-
-.donate ul {
-	display: inline-block;
-    vertical-align: top;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-.donate ul li {
-    display: inline-block;
-    margin: 10px;
-    vertical-align: top;
-}
-
-.donate ul li img {
-    height: 70px;
-    margin-bottom: 10px;
-}
-// .donate ul li a {
-// 	color: #009CDE;
-// }
-
-
 .networks {
 	margin: 40px 0;
 }
